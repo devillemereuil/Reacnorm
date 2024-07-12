@@ -350,8 +350,8 @@ rn_gamma_env <- function(env,
     }
 
     # Formatting the shape for the computation of the integral
-    func    <- rn_generate_shape(shape, names(theta))
-    d_func  <- rn_generate_gradient(shape, names(theta)[-fixed], names(theta))
+    func    <- rn_generate_shape(shape, all_names)
+    d_func  <- rn_generate_gradient(shape, var_names, all_names)
 
     # Computing psi for each environment
     psi <-
