@@ -1,0 +1,3 @@
+import(cubature, stringi)
+importFrom("stats", "D", "cov", "var")
+export(rn_mean_by_env, rn_vplas, rn_pi_decomp, rn_vgen, rn_gen_decomp, rn_gamma_env)
