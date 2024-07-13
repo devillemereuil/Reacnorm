@@ -22,16 +22,7 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-##  ---------------------------------------------------- Backend functions ----
-
-## Non-Bessel-corrected variance
-var_nocorrect <- function(vec) {
-    N <- length(vec)
-
-    ((N - 1) / N) * var(vec)
-}
-
-##  --------------------------------------------------- Frontend functions ----
+## ------------------------------------------ Formal computation functions ----
 
 ## Utilitary function (exposed to the user) to format a shape function automatically
 # Args: - expr: expression from which the gradient needs to the computed (expression)
