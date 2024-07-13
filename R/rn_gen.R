@@ -34,10 +34,10 @@
 #       - width: the width over which the integral must be computed
 #                (10 is a generally a good value)
 # Value: The value for V_g_e (numeric)
-rn_vg_e <- function(e, func, theta, G_theta, fixed = NA, width = 10) {
+rn_vg_e <- function(e, func, theta, G_theta, fixed = NULL, width = 10) {
 
     # Handling when some terms are fixed
-    if (!any(is.na(fixed))) {
+    if (!is.null(fixed)) {
         var       <- setdiff(1:length(theta), fixed)
         full_theta <- theta
         var_theta  <- theta[-fixed]
@@ -65,7 +65,7 @@ rn_vg_e <- function(e, func, theta, G_theta, fixed = NA, width = 10) {
     cubature::hcubature(
         f  = function(x) {
             full_x      <- matrix(full_theta, nrow = length(full_theta), ncol = ncol(x))
-            if (!any(is.na(fixed))) { full_x[var, ] <- x } else { full_x <- x }
+            if (!is.null(fixed)) { full_x[var, ] <- x } else { full_x <- x }
             func(e, full_x)^2 * vec_mvnorm(x, var_theta, G_theta, logdet)
         },
         lowerLimit = var_theta - w,
@@ -86,10 +86,10 @@ rn_vg_e <- function(e, func, theta, G_theta, fixed = NA, width = 10) {
 #       - width: the width over which the integral must be computed
 #                (10 is a generally a good value)
 # Value: The value for V_g_e (numeric)
-rn_psi_e <- function(e, d_func, theta, G_theta, fixed = NA, width = 10) {
+rn_psi_e <- function(e, d_func, theta, G_theta, fixed = NULL, width = 10) {
 
     # Handling when some terms are fixed
-    if (!any(is.na(fixed))) {
+    if (!is.null(fixed)) {
         var        <- setdiff(1:length(theta), fixed)
         full_theta <- theta
         var_theta  <- theta[-fixed]
@@ -114,7 +114,7 @@ rn_psi_e <- function(e, d_func, theta, G_theta, fixed = NA, width = 10) {
     cubature::hcubature(
         f  = function(x) {
             full_x      <- matrix(full_theta, nrow = length(full_theta), ncol = ncol(x))
-            if (!any(is.na(fixed))) { full_x[var, ] <- x } else { full_x <- x }
+            if (!is.null(fixed)) { full_x[var, ] <- x } else { full_x <- x }
             d_func(e, full_x) * matrix(rep(vec_mvnorm(x, var_theta, G_theta, logdet), d),
                                        nrow = d,
                                        byrow = TRUE)
@@ -148,7 +148,7 @@ rn_vgen <- function(env,
                     shape,
                     theta,
                     G_theta,
-                    fixed = NA,
+                    fixed = NULL,
                     wt_env = NULL,
                     average = TRUE,
                     width = 10) {
@@ -200,7 +200,7 @@ rn_gen_decomp <- function(env,
                           shape,
                           theta,
                           G_theta,
-                          fixed = NA,
+                          fixed = NULL,
                           wt_env = NULL,
                           compute_gamma = TRUE,
                           compute_iota  = TRUE,
@@ -211,7 +211,7 @@ rn_gen_decomp <- function(env,
     }
 
     # Getting the names of parameters
-    if (all(is.na(fixed))) {
+    if (is.null(fixed)) {
         all_names <- names(theta)
         var_names <- names(theta)
     } else {
@@ -357,7 +357,7 @@ rn_gamma_env <- function(env,
                          shape,
                          theta,
                          G_theta,
-                         fixed = NA,
+                         fixed = NULL,
                          width = 10) {
     # The parameter theta must be named
     if (is.null(names(theta))) {
@@ -365,7 +365,7 @@ rn_gamma_env <- function(env,
     }
 
     # Getting the names of parameters
-    if (all(is.na(fixed))) {
+    if (is.null(fixed)) {
         all_names <- names(theta)
         var_names <- names(theta)
     } else {

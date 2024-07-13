@@ -6,7 +6,7 @@
 This function calculates the plastic variance of the average (over genotypes) reaction norm shape \eqn{V_{\text{Plas}}} and its \eqn{\pi}-decomposition into \eqn{\pi_{\text{Sl}}} and \eqn{\pi_{\text{Cv}}}.
 }
 \usage{
-rn_pi_decomp(env, shape, theta, G_theta, fixed = NA, wt_env = NULL,
+rn_pi_decomp(env, shape, theta, G_theta, fixed = NULL, wt_env = NULL,
              correction = FALSE, v_plas = NA, width = 10)
 }
 \arguments{

@@ -6,7 +6,7 @@
 This function calculates the total genetic variance \eqn{V_{\text{Gen}}} arising from genetic variation in the reaction norm.
 }
 \usage{
-rn_vgen(env, shape, theta, G_theta, fixed = NA, wt_env = NULL,
+rn_vgen(env, shape, theta, G_theta, fixed = NULL, wt_env = NULL,
         average = TRUE, width = 10)
 }
 \arguments{

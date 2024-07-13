@@ -6,7 +6,7 @@
 This function calculates the purely environmental plastic variance arising from the average (across genotypes) shape of the reaction norm.
 }
 \usage{
-rn_vplas(env, shape, theta, G_theta, fixed = NA, wt_env = NULL,
+rn_vplas(env, shape, theta, G_theta, fixed = NULL, wt_env = NULL,
          correction = FALSE, width = 10)
 }
 \arguments{

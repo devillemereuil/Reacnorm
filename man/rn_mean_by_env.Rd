@@ -6,7 +6,7 @@
 This function calculates the phenotypic mean on the observed scale from the latent mean and variance.
 }
 \usage{
-rn_mean_by_env(env, shape, theta, G_theta, fixed = NA, width = 10)
+rn_mean_by_env(env, shape, theta, G_theta, fixed = NULL, width = 10)
 }
 \arguments{
   \item{env}{Vector of environmental values (numeric).}

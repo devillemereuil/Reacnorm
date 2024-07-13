@@ -6,7 +6,7 @@
 This function calculates the total additive genetic variance of the reaction norm (\eqn{V_{\text{Add}}}, and its \eqn{\gamma}-decomposition), the marginal additive genetic variance of the trait (\eqn{V_{\text{A}}}) and the additive genetic variance of plasticity (\eqn{V_{\text{A}\times\text{E}}}, and its \eqn{\iota}-decomposition).
 }
 \usage{
-rn_gen_decomp(env, shape, theta, G_theta, fixed = NA, wt_env = NULL,
+rn_gen_decomp(env, shape, theta, G_theta, fixed = NULL, wt_env = NULL,
               compute_gamma = TRUE, compute_iota  = TRUE, width = 10)
 }
 \arguments{

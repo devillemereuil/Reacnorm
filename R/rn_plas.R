@@ -37,10 +37,10 @@ rn_avg_e <- function(e,
                      func,
                      theta,
                      G_theta,
-                     fixed = NA,
+                     fixed = NULL,
                      width = 10) {
     # Handling when some terms are fixed
-    if (!any(is.na(fixed))) {
+    if (!is.null(fixed)) {
         var       <- setdiff(1:length(theta), fixed)
         full_theta <- theta
         var_theta  <- theta[-fixed]
@@ -65,7 +65,7 @@ rn_avg_e <- function(e,
     avg <- cubature::hcubature(
         f  = function(x) {
             full_x <- matrix(full_theta, nrow = length(full_theta), ncol = ncol(x))
-            if (!any(is.na(fixed))) { full_x[var, ] <- x } else { full_x <- x }
+            if (!is.null(fixed)) { full_x[var, ] <- x } else { full_x <- x }
             func(e, full_x) * vec_mvnorm(x, var_theta, G_theta, logdet)
         },
         lowerLimit      = var_theta - w,
@@ -94,7 +94,7 @@ rn_mean_by_env <- function(env,
                            shape,
                            theta,
                            G_theta,
-                           fixed = NA,
+                           fixed = NULL,
                            width = 10) {
     if (is.null(names(theta))) {
         stop("The vector theta must be named with the corresponding parameter names")
@@ -129,7 +129,7 @@ rn_vplas <- function(env,
                      shape,
                      theta,
                      G_theta,
-                     fixed = NA,
+                     fixed = NULL,
                      wt_env = NULL,
                      correction = FALSE,
                      width = 10) {
@@ -174,7 +174,7 @@ rn_pi_decomp <- function(env,
                          shape,
                          theta,
                          G_theta,
-                         fixed = NA,
+                         fixed = NULL,
                          wt_env = NULL,
                          correction = FALSE,
                          v_plas = NA,

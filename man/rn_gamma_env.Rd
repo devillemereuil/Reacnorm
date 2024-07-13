@@ -6,7 +6,7 @@
 This function computes the \eqn{\gamma}-decomposition of the additive genetic variance for each environment.
 }
 \usage{
-rn_gamma_env(env, shape, theta, G_theta, fixed = NA, width = 10)
+rn_gamma_env(env, shape, theta, G_theta, fixed = NULL, width = 10)
 }
 \arguments{
   \item{env}{Vector of environmental values (numeric).}
