@@ -1,12 +1,12 @@
 Package: Reacnorm
 Type: Package
-Title: Perform a quantitative genetics analysis of reaction norms
+Title: Perform a Quantitative Genetics Analysis of Reaction Norms
 Version: 0.1.0
-Date: 2024-06-03
+Date: 2024-07-13
 Author: Pierre de Villemereuil <pierre.devillemereuil@ephe.psl.eu>
 Maintainer: Pierre de Villemereuil <pierre.devillemereuil@ephe.psl.eu>
 BugReports: https://github.com/devillemereuil/reacnorm/issues
 Description: Compute various quantitative genetics parameters from a statistical models used to study reaction norms.
 Encoding: UTF-8
-Imports: cubature (>= 1.4), stringi
+Imports: cubature (>= 1.4), stringi, matrixStats
 License: GPL-3

@@ -6,15 +6,15 @@
 This function computes the \eqn{\gamma}-decomposition of the additive genetic variance for each environment.
 }
 \usage{
-rn_gamma_env(env, shape, theta, G_theta, width = 10, fixed = NA)
+rn_gamma_env(env, shape, theta, G_theta, fixed = NA, width = 10)
 }
 \arguments{
   \item{env}{Vector of environmental values (numeric).}
   \item{shape}{Expression providing the shape of the reaction where \code{x} is the environment. For example: \code{expression(a + b * x + c * x^2)}.}
   \item{theta}{Average parameters of the shape function. It must be a named vector, with the names corresponding to the parameters in the \code{shape} expression. (numeric)}
   \item{G_theta}{Genetic variance-covariance matrix of the parameters. It can be of lesser dimensions than \code{theta}, see \code{fixed} parameter. (numerical matrix)}
-  \item{width}{Parameter for the integral computation. The integral is evaluated from \code{mu} - \code{width * sqrt(var)} to \code{mu} + \code{width * sqrt(var)}. The default value is 10, which should be sensible for most models. (numeric)}
   \item{fixed}{If some parameters of \code{shape}, included in \code{theta} are not included in the \code{G_theta} matrix, then those dimensions are considered as genetically "fixed". Hence, \code{fixed} should contain a vector of the \bold{index} of those parameters. Otherwise (if all parameters vary genetically), and by default, fixed should be set as NA. (integer)}
+  \item{width}{Parameter for the integral computation. The integral is evaluated from \code{mu} - \code{width * sqrt(var)} to \code{mu} + \code{width * sqrt(var)}. The default value is 10, which should be sensible for most models. (numeric)}
 } 
 
 \details{
@@ -53,7 +53,6 @@ rn_gamma_env(env     = vec_env,
               shape   = expr,
               theta   = theta,
               G_theta = G,
-              width   = 10,
               fixed   = c(3, 4))
 # Note that fixed is set for the third and forth parameters than are not in G
 

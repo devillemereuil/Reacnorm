@@ -29,16 +29,16 @@
 #       - func: the function of the reaction norm fitted by the model
 #       - theta: the average parameters estimated by the model
 #       - G_theta: the genetic variance-covariance matrix estimated by the model
+#       - fixed: which part of the parameters are fixed (no genetic variation)
 #       - width: the width over which the integral must be computed
 #                (10 is a generally a good value)
-#       - fixed: which part of the parameters are fixed (no genetic variation)
 # Value: The value for E_g_e (numeric)
 rn_avg_e <- function(e,
                      func,
                      theta,
                      G_theta,
-                     width = 10,
-                     fixed = NA) {
+                     fixed = NA,
+                     width = 10) {
     # Handling when some terms are fixed
     if (!any(is.na(fixed))) {
         var       <- setdiff(1:length(theta), fixed)
@@ -85,17 +85,17 @@ rn_avg_e <- function(e,
 # Args: - env: the environmental values over which the model has been estimated
 #       - shape: the function of the reaction norm fitted by the model (must be named)
 #       - theta: the average parameters estimated by the model
-#       - vars: the vars estimated from the model
+#       - G_theta: the genetic variance-covariance matrix estimated by the model
+#       - fixed: which part of the parameters are fixed (no genetic variation)
 #       - width: the width over which the integral must be computed
 #                (10 is a generally a good value)
-#       - fixed: which part of the parameters are fixed (no genetic variation)
 # Value: The value for V_plas (numeric)
 rn_mean_by_env <- function(env,
                            shape,
                            theta,
                            G_theta,
-                           width = 10,
-                           fixed = NA) {
+                           fixed = NA,
+                           width = 10) {
     if (is.null(names(theta))) {
         stop("The vector theta must be named with the corresponding parameter names")
     }
@@ -108,36 +108,42 @@ rn_mean_by_env <- function(env,
                          func    = func,
                          theta   = theta,
                          G_theta = G_theta,
-                         width   = width,
-                         fixed   = fixed))
+                         fixed   = fixed,
+                         width   = width))
 }
 
 ## Compute the plastic variance (V_plas)
 # Args: - env: the environmental values over which the model has been estimated
 #       - shape: the function of the reaction norm fitted by the model
 #       - theta: the average parameters estimated by the model (must be named)
-#       - G_theta: the G matrix containing the genetic variance-covariances of the parameters
+#       - G_theta: the G matrix containing the genetic variance-covariances of
+#                  the parameters
+#       - fixed: which part of the parameters are fixed (no genetic variation)
+#       - wt_env: weights to use for computing the average over env
+#                 (must be the same length as env)
+#       - correction: should the Bessel correction be used or not?
 #       - width: the width over which the integral must be computed
 #                (10 is a generally a good value)
-#       - fixed: which part of the parameters are fixed (no genetic variation)
-#       - correction: should the Bessel correction be used or not?
 # Value: The value for V_plas (numeric)
 rn_vplas <- function(env,
                      shape,
                      theta,
                      G_theta,
-                     width = 10,
                      fixed = NA,
-                     correction = FALSE) {
-    # Should we apply Bessel's correction (R default) or not (QGrn default)?
-    if (correction) {
-        var_func <- var
-    } else {
-        var_func <- var_nocorrect
-    }
-
+                     wt_env = NULL,
+                     correction = FALSE,
+                     width = 10) {
+    # theta must be named to know the names of parameters to format the "shape"
     if (is.null(names(theta))) {
         stop("The vector theta must be named with the corresponding parameter names")
+    }
+
+    # Configure variance function
+    method <- ifelse(correction, "unbiased", "ML")
+    if (is.null(wt_env)) {wt_env <- rep(1/length(env), length(env))}
+    func_var <- function(x) {
+        cov.wt(cbind(x), wt = wt_env, method = method)[["cov"]] |>
+            as.numeric()
     }
 
     # Compute the average for each environment, then take the variance
@@ -145,39 +151,52 @@ rn_vplas <- function(env,
                    shape    = shape,
                    theta    = theta,
                    G_theta  = G_theta,
-                   width    = width,
-                   fixed    = fixed) |>
-        var_func()
+                   fixed    = fixed,
+                   width    = width) |>
+        func_var()
 }
 
 ## Compute the π-decomposition of V_Plas
 # Args: - env: the environmental values over which the model has been estimated
 #       - shape: the function of the reaction norm fitted by the model
 #       - theta: the average parameters estimated by the model (must be named)
-#       - width: the width over which the integral must be computed
-#                (10 is a generally a good value)
+#       - G_theta: the G matrix containing the genetic variance-covariances of
+#                  the parameters
 #       - fixed: which part of the parameters are fixed (no genetic variation)
+#       - wt_env: weights to use for computing the average over env
+#                 (must be the same length as env)
 #       - correction: should the Bessel correction be used or not?
 #       - v_plas: optionnaly, provide the value for v_plas if already computed
+#       - width: the width over which the integral must be computed
+#                (10 is a generally a good value)
 # Value: The value for V_plas (numeric)
 rn_pi_decomp <- function(env,
                          shape,
                          theta,
                          G_theta,
-                         width = 10,
                          fixed = NA,
+                         wt_env = NULL,
                          correction = FALSE,
-                         v_plas = NA) {
+                         v_plas = NA,
+                         width = 10) {
     # theta must be named to know the names of parameters to format the "shape"
     if (is.null(names(theta))) {
         stop("The vector theta must be named with the corresponding parameter names")
     }
 
-    # Should we apply Bessel's correction (R default) or not (this function default)?
-    if (correction) {
-        var_func <- var
+    # Use weighted mean if wt_env is not NULL
+    if (is.null(wt_env)) {
+        func_mean    <- mean
     } else {
-        var_func <- var_nocorrect
+        func_mean    <- function(x) { weighted.mean(x, w = wt_env) }
+    }
+
+    # Configure variance function
+    method <- ifelse(correction, "unbiased", "ML")
+    if (is.null(wt_env)) {wt_env <- rep(1/length(env), length(env))}
+    func_var <- function(x) {
+        cov.wt(cbind(x), wt = wt_env, method = method)[["cov"]] |>
+            as.numeric()
     }
 
     # Compute V_plas
@@ -187,9 +206,9 @@ rn_pi_decomp <- function(env,
                      shape      = shape,
                      theta      = theta,
                      G_theta    = G_theta,
-                     width      = width,
                      fixed      = fixed,
-                     correction = correction)
+                     correction = correction,
+                     width      = width)
     }
 
     # Compute the average slope
@@ -201,12 +220,12 @@ rn_pi_decomp <- function(env,
                              func    = d_func,
                              theta   = theta,
                              G_theta = G_theta,
-                             width   = width,
-                             fixed   = fixed)) |>
-        mean()
+                             fixed   = fixed,
+                             width   = width)) |>
+        func_mean()
 
     # Compute the variance due to the average slope
-    var_sl <- (mean_sl)^2 * var_func(env)
+    var_sl <- (mean_sl)^2 * func_var(env)
 
     # Compute the average curvature
     d2_func <- rn_generate_2diff(shape, "x", names(theta))
@@ -217,12 +236,12 @@ rn_pi_decomp <- function(env,
                              func    = d2_func,
                              theta   = theta,
                              G_theta = G_theta,
-                             width   = width,
-                             fixed   = fixed)) |>
-        mean()
+                             fixed   = fixed,
+                             width   = width)) |>
+        func_mean()
 
     # Compute the variance due to the average curvature*
-    var_cv <- 0.25 * (mean_cv)^2 * var_func(env^2)
+    var_cv <- 0.25 * (mean_cv)^2 * func_var(env^2)
 
     # Return the decomposition
     data.frame(V_Plas = v_plas,

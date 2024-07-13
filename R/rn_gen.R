@@ -30,11 +30,11 @@
 #       - func: the function of the reaction norm fitted by the model
 #       - theta: the average parameters estimated by the model
 #       - G_theta: the genetic variance-covariance matrix estimated by the model
+#       - fixed: which part of the parameters are fixed (no genetic variation)
 #       - width: the width over which the integral must be computed
 #                (10 is a generally a good value)
-#       - fixed: which part of the parameters are fixed (no genetic variation)
 # Value: The value for V_g_e (numeric)
-rn_vg_e <- function(e, func, theta, G_theta, width = 10, fixed = NA) {
+rn_vg_e <- function(e, func, theta, G_theta, fixed = NA, width = 10) {
 
     # Handling when some terms are fixed
     if (!any(is.na(fixed))) {
@@ -59,7 +59,7 @@ rn_vg_e <- function(e, func, theta, G_theta, width = 10, fixed = NA) {
     logdet <- calc_logdet(G_theta)
 
     # Average
-    avg <- rn_avg_e(e, func, theta, G_theta, width = 10, fixed = fixed)
+    avg <- rn_avg_e(e, func, theta, G_theta, fixed = fixed, width = 10)
 
     # Computing the integral
     cubature::hcubature(
@@ -82,11 +82,11 @@ rn_vg_e <- function(e, func, theta, G_theta, width = 10, fixed = NA) {
 #       - d_func: the differential of function of the reaction norm fitted by the model
 #       - theta: the average parameters estimated by the model
 #       - G_theta: the genetic variance-covariance matrix estimated by the model
+#       - fixed: which part of the parameters are fixed (no genetic variation)
 #       - width: the width over which the integral must be computed
 #                (10 is a generally a good value)
-#       - fixed: which part of the parameters are fixed (no genetic variation)
 # Value: The value for V_g_e (numeric)
-rn_psi_e <- function(e, d_func, theta, G_theta, width = 10, fixed = NA) {
+rn_psi_e <- function(e, d_func, theta, G_theta, fixed = NA, width = 10) {
 
     # Handling when some terms are fixed
     if (!any(is.na(fixed))) {
@@ -133,25 +133,35 @@ rn_psi_e <- function(e, d_func, theta, G_theta, width = 10, fixed = NA) {
 
 ## Compute the genetic variance (V_gen)
 # Args: - env: the environmental values over which the model has been estimated
-#       - theta: the average parameters estimated by the model (must be named)
-#       - vars: the vars estimated from the model
 #       - shape: the function of the reaction norm fitted by the model
-#       - width: the width over which the integral must be computed
-#                (10 is a generally a good value)
+#       - theta: the average parameters estimated by the model (must be named)
+#       - G_theta: the genetic variance-covariance matrix estimated by the model
 #       - fixed: which part of the parameters are fixed (no genetic variation)
+#       - wt_env: weights to use for computing the average over env
+#                 (must be the same length as env)
 #       - average: should the average of variances be returned?
 #                  If FALSE, return the variance for each environmental value
+#       - width: the width over which the integral must be computed
+#                (10 is a generally a good value)
 # Value: The value for V_gen (numeric)
 rn_vgen <- function(env,
                     shape,
                     theta,
                     G_theta,
-                    width = 10,
                     fixed = NA,
-                    average = TRUE) {
+                    wt_env = NULL,
+                    average = TRUE,
+                    width = 10) {
     # The parameter theta must be named
     if (is.null(names(theta))) {
         stop("The vector theta must be named with the corresponding parameter names")
+    }
+
+    # Use weighted mean if wt_env is not NULL
+    if (is.null(wt_env)) {
+        func_mean <- mean
+    } else {
+        func_mean <- function(x) { weighted.mean(x, w = wt_env) }
     }
 
     # Formatting the shape for the computation of the integral
@@ -164,11 +174,11 @@ rn_vgen <- function(env,
                             func    = func,
                             theta   = theta,
                             G_theta = G_theta,
-                            width   = width,
-                            fixed   = fixed))
+                            fixed   = fixed,
+                            width   = width))
 
     # Averaging if requested (default)
-    if (average) { out <- mean(out) }
+    if (average) { out <- func_mean(out) }
 
     return(out)
 }
@@ -177,21 +187,24 @@ rn_vgen <- function(env,
 # Args: - env: the environmental values over which the model has been estimated
 #       - shape: the function of the reaction norm fitted by the model
 #       - theta: the average parameters estimated by the model (must be named)
-#       - vars: the vars estimated from the model
+#       - G_theta: the genetic variance-covariance matrix estimated by the model
+#       - fixed: which part of the parameters are fixed (no genetic variation)
+#       - wt_env: weights to use for computing the average over env
+#                 (must be the same length as env)
+#       - compute_gamma: should the γ-decomposition of V_add be returned?
+#       - compute_iota: should the ι-decomposition of V_AxE be returned?
 #       - width: the width over which the integral must be computed
 #                (10 is a generally a good value)
-#       - fixed: which part of the parameters are fixed (no genetic variation)
-#       - gamma: should the γ-decomposition of V_add be returned?
-#       - iota: should the ι-decomposition of V_AxE be returned?
 # Value: The value for V_gen (numeric)
 rn_gen_decomp <- function(env,
                           shape,
                           theta,
                           G_theta,
-                          width = 10,
                           fixed = NA,
+                          wt_env = NULL,
                           compute_gamma = TRUE,
-                          compute_iota  = TRUE) {
+                          compute_iota  = TRUE,
+                          width = 10) {
     # The parameter theta must be named
     if (is.null(names(theta))) {
         stop("The vector theta must be named with the corresponding parameter names")
@@ -206,6 +219,17 @@ rn_gen_decomp <- function(env,
         var_names <- names(theta)[-fixed]
     }
 
+    # Use weighted mean if wt_env is not NULL
+    if (is.null(wt_env)) {
+        func_mean    <- mean
+        func_colmean <- colMeans
+        func_cov     <- function(x) { cov(x) * (nrow(x) - 1) / nrow(x)}
+    } else {
+        func_mean    <- function(x) { weighted.mean(x, w = wt_env) }
+        func_colmean <- function(x) { colWeightedMeans(x, w = wt_env) }
+        func_cov     <- function(x) { cov.wt(x, wt = wt_env, method = "ML")[["cov"]] }
+    }
+
     # Formatting the shape for the computation of the integral
     func    <- rn_generate_shape(shape, all_names)
     d_func  <- rn_generate_gradient(shape, var_names, all_names)
@@ -217,19 +241,19 @@ rn_gen_decomp <- function(env,
                               d_func  = d_func,
                               theta   = theta,
                               G_theta = G_theta,
-                              width   = width,
-                              fixed   = fixed)})
+                              fixed   = fixed,
+                              width   = width)})
     psi <- do.call("rbind", psi)
     colnames(psi) <- var_names
 
     # Computing the total additive genetic variance V_add
     v_add <-
         apply(psi, 1, \(psi_) t(psi_) %*% G_theta %*% psi_) |>
-        mean()
+        func_mean()
     names(v_add) <- "V_Add"
 
     # Computing the marginal additive genetic variance V_A
-    v_a <- (t(colMeans(psi)) %*% G_theta %*% colMeans(psi)) |>
+    v_a <- (t(func_colmean(psi)) %*% G_theta %*% func_colmean(psi)) |>
            as.vector()
     names(v_a) <- "V_A"
 
@@ -267,7 +291,7 @@ rn_gen_decomp <- function(env,
                 gamma_i,
                 gamma_ij
             ) |>
-            colMeans()
+            func_colmean()
         gamma <- gamma / v_add
     } else {
         gamma <- NULL
@@ -275,9 +299,9 @@ rn_gen_decomp <- function(env,
 
     # Computing the ι-decomposition if required (default)
     if (compute_iota) {
-        # Computing the variance-covariance of Psi
+        # Computing the (weighted) variance-covariance of Psi
         # (needs to remove Bessel's correction for consistancy with the means above)
-        Psi <- cov(psi) * (nrow(psi) - 1) / nrow(psi)
+        Psi <- func_cov(psi)
 
         # Computing the pairwise multiplication of Psi and G_theta
         M <- Psi * G_theta
@@ -325,16 +349,16 @@ rn_gen_decomp <- function(env,
 #       - theta: the average parameters estimated by the model
 #                (must be named)
 #       - G_theta: the genetic variance-covariance matrix estimated by the model
+#       - fixed: which part of the parameters are fixed (no genetic variation)
 #       - width: the width over which the integral must be computed
 #                (10 is a generally a good value)
-#       - fixed: which part of the parameters are fixed (no genetic variation)
 # Value: The value for V_A and Gamma-decomposition as a data.frame for each environment
 rn_gamma_env <- function(env,
                          shape,
                          theta,
                          G_theta,
-                         width = 10,
-                         fixed = NA) {
+                         fixed = NA,
+                         width = 10) {
     # The parameter theta must be named
     if (is.null(names(theta))) {
         stop("The vector theta must be named with the corresponding parameter names")
@@ -360,8 +384,8 @@ rn_gamma_env <- function(env,
                               d_func  = d_func,
                               theta   = theta,
                               G_theta = G_theta,
-                              width   = width,
-                              fixed   = fixed)})
+                              fixed   = fixed,
+                              width   = width)})
     psi <- do.call("rbind", psi)
     colnames(psi) <- var_names
 
