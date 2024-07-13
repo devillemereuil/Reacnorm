@@ -370,7 +370,7 @@ rn_gamma_env <- function(env,
 
     # Computing the gamma-decomposition of V_A_e
     gamma_i <- t(apply(psi, 1, \(psi_) psi_^2 * diag(G_theta)))
-    colnames(gamma_i) <- paste0("Gamma:",colnames(gamma_i))
+    colnames(gamma_i) <- paste0("Gamma_",colnames(gamma_i))
 
     gamma_ij <- apply(psi, 1, simplify = FALSE, FUN = \(psi_) {
         out <- numeric(sum(upper.tri(G_theta)))
@@ -379,7 +379,7 @@ rn_gamma_env <- function(env,
         for (i in 1:(length(psi_) - 1)) {
             for (j in (i+1):length(psi_)) {
                 out[k] <- 2 * psi_[i] * psi_[2] * G_theta[i, j]
-                names_out[k] <- paste(names(psi_)[i], names(psi_)[j], sep = "-")
+                names_out[k] <- paste(names(psi_)[i], names(psi_)[j], sep = "_")
                 k <- k + 1
             }
         }
@@ -387,7 +387,7 @@ rn_gamma_env <- function(env,
         return(out)
     })
     gamma_ij <- do.call("rbind", gamma_ij)
-    colnames(gamma_ij) <- paste0("Gamma:",colnames(gamma_ij))
+    colnames(gamma_ij) <- paste0("Gamma_",colnames(gamma_ij))
 
     # Formatting the output
     out <-
