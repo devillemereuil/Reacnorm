@@ -6,13 +6,13 @@
 This function calculates the phenotypic mean on the observed scale from the latent mean and variance.
 }
 \usage{
-rn_mean_by_env(env, shape, theta, G_theta, fixed = NULL, width = 10)
+rn_mean_by_env(theta, G_theta, env, shape, fixed = NULL, width = 10)
 }
 \arguments{
-  \item{env}{Vector of environmental values (numeric).}
-  \item{shape}{Expression providing the shape of the reaction where \code{x} is the environment. For example: \code{expression(a + b * x + c * x^2)}.}
   \item{theta}{Average parameters of the shape function. It must be a named vector, with the names corresponding to the parameters in the \code{shape} expression. (numeric)}
   \item{G_theta}{Genetic variance-covariance matrix of the parameters. It can be of lesser dimensions than \code{theta}, see \code{fixed} parameter. (numerical matrix)}
+  \item{env}{Vector of environmental values (numeric).}
+  \item{shape}{Expression providing the shape of the reaction where \code{x} is the environment. For example: \code{expression(a + b * x + c * x^2)}.}
   \item{fixed}{If some parameters of \code{shape}, included in \code{theta} are not included in the \code{G_theta} matrix, then those dimensions are considered as genetically "fixed". Hence, \code{fixed} should contain a vector of the \bold{index} of those parameters. Otherwise (if all parameters vary genetically), and by default, fixed should be set as NA. (integer)}
   \item{width}{Parameter for the integral computation. The integral is evaluated from \code{mu} - \code{width * sqrt(var)} to \code{mu} + \code{width * sqrt(var)}. The default value is 10, which should be sensible for most models. (numeric)}
 } 

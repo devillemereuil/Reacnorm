@@ -6,14 +6,16 @@
 This function calculates the purely environmental plastic variance arising from the average (across genotypes) shape of the reaction norm.
 }
 \usage{
-rn_vplas(env, shape, theta, G_theta, fixed = NULL, wt_env = NULL,
-         correction = FALSE, width = 10)
+rn_vplas(theta, G_theta, env = NULL, shape = NULL, X = NULL, S = NULL,
+         fixed = NULL, wt_env = NULL, correction = FALSE, width = 10)
 }
 \arguments{
-  \item{env}{Vector of environmental values (numeric).}
-  \item{shape}{Expression providing the shape of the reaction where \code{x} is the environment. For example: \code{expression(a + b * x + c * x^2)}.}
   \item{theta}{Average parameters of the shape function. It must be a named vector, with the names corresponding to the parameters in the \code{shape} expression. (numeric)}
   \item{G_theta}{Genetic variance-covariance matrix of the parameters. It can be of lesser dimensions than \code{theta}, see \code{fixed} parameter. (numerical matrix)}
+  \item{env}{Vector of environmental values (numeric).}
+  \item{shape}{Expression providing the shape of the reaction where \code{x} is the environment. For example: \code{expression(a + b * x + c * x^2)}.}
+  \item{X}{If the model used was linear in the parameters, the design matrix X of the model (numeric, incompatible with the arguments \code{env} and \code{shape}).}
+  \item{S}{The error variance-covariance matrix of the estimated fixed effects \code{theta}. Used only if the \code{X} argument is used. (numeric, incompatible with the arguments \code{env} and \code{shape}).}
   \item{fixed}{If some parameters of \code{shape}, included in \code{theta} are not included in the \code{G_theta} matrix, then those dimensions are considered as genetically "fixed". Hence, \code{fixed} should contain a vector of the \bold{index} of those parameters. Otherwise (if all parameters vary genetically), and by default, fixed should be set as NA. (integer)}
   \item{wt_env}{Weights to apply to the \code{env} vector values, providing an information regarding their relative probability in the biological context. The weights must non-negative, and at least one must non-zero. The vector \code{wt_env} must be the same length as \code{env}. By default, no weighting is applied. (numeric)}
   \item{correction}{Should Bessel's correction (dividing the sum-of-squares by N-1 rather than N) be used (TRUE) or not (FALSE, default). The default is FALSE, because it is likely that other components such as the total phenotypic variance is computed over the number of individuals (generally large number) rather than the number of environments (generally small number). The best is to manually use Bessel's correction over the proper number of data points. (boolean)}
@@ -52,27 +54,34 @@ G     <- matrix(c(0.1,      0.01,
                 ncol = 2)
 
 # Computing V_plas
-rn_vplas(env     = vec_env,
-         shape   = expr,
-         theta   = theta,
+rn_vplas(theta   = theta,
          G_theta = G,
+         env     = vec_env,
+         shape   = expr,
          fixed   = c(3, 4))
 # Note that fixed is set for the third and forth parameters than are not in G
 
 # Note the quite large difference when Bessel's correction is used
-rn_vplas(env     = vec_env,
-         shape   = expr,
-         theta   = theta,
+rn_vplas(theta   = theta,
          G_theta = G,
+         env     = vec_env,
+         shape   = expr,
          fixed   = c(3, 4),
          correction = TRUE)
          
 # It is possible to weight the environment, e.g. according to a normal distribution
-rn_vplas(env     = vec_env,
-         shape   = expr,
-         theta   = theta,
+rn_vplas(theta   = theta,
          G_theta = G,
+         env     = vec_env,
+         shape   = expr,
          fixed   = c(3, 4),
          wt_env  = dnorm(vec_env),
          correction = TRUE)
+
+# If a polynomial was used, it is possible to use the linear modeling rather having
+# to compute integrals
+theta <- c(a = 1.5, b = 0.5, c = -0.5)
+X     <- cbind(1, vec_env, (vec_env - mean(vec_env))^2)
+S     <- (10^-4) * diag(3)
+rn_vplas(theta = theta, X = X, S = S)
 }
