@@ -132,10 +132,10 @@ rn_psi_e <- function(e, d_func, theta, G_theta, fixed = NULL, width = 10) {
 ##  --------------------------------------------------- Frontend functions ----
 
 ## Compute the genetic variance (V_gen)
-# Args: - env: the environmental values over which the model has been estimated
-#       - shape: the function of the reaction norm fitted by the model
-#       - theta: the average parameters estimated by the model (must be named)
+# Args: - theta: the average parameters estimated by the model (must be named)
 #       - G_theta: the genetic variance-covariance matrix estimated by the model
+#       - env: the environmental values over which the model has been estimated
+#       - shape: the function of the reaction norm fitted by the model
 #       - fixed: which part of the parameters are fixed (no genetic variation)
 #       - wt_env: weights to use for computing the average over env
 #                 (must be the same length as env)
@@ -144,10 +144,10 @@ rn_psi_e <- function(e, d_func, theta, G_theta, fixed = NULL, width = 10) {
 #       - width: the width over which the integral must be computed
 #                (10 is a generally a good value)
 # Value: The value for V_gen (numeric)
-rn_vgen <- function(env,
-                    shape,
-                    theta,
+rn_vgen <- function(theta,
                     G_theta,
+                    env,
+                    shape,
                     fixed = NULL,
                     wt_env = NULL,
                     average = TRUE,
@@ -184,10 +184,10 @@ rn_vgen <- function(env,
 }
 
 ## Compute the additive genetic variance decomposition
-# Args: - env: the environmental values over which the model has been estimated
-#       - shape: the function of the reaction norm fitted by the model
-#       - theta: the average parameters estimated by the model (must be named)
+# Args: - theta: the average parameters estimated by the model (must be named)
 #       - G_theta: the genetic variance-covariance matrix estimated by the model
+#       - env: the environmental values over which the model has been estimated
+#       - shape: the function of the reaction norm fitted by the model
 #       - fixed: which part of the parameters are fixed (no genetic variation)
 #       - wt_env: weights to use for computing the average over env
 #                 (must be the same length as env)
@@ -196,10 +196,10 @@ rn_vgen <- function(env,
 #       - width: the width over which the integral must be computed
 #                (10 is a generally a good value)
 # Value: The value for V_gen (numeric)
-rn_gen_decomp <- function(env,
-                          shape,
-                          theta,
+rn_gen_decomp <- function(theta,
                           G_theta,
+                          env,
+                          shape,
                           fixed = NULL,
                           wt_env = NULL,
                           compute_gamma = TRUE,
@@ -344,19 +344,19 @@ rn_gen_decomp <- function(env,
 }
 
 ## Performing the γ-decomposition for each environment
-# Args: - env: the environmental values over which the model has been estimated
-#       - shape: the shape of the reaction norm fitted by the model
-#       - theta: the average parameters estimated by the model
+# Args: - theta: the average parameters estimated by the model
 #                (must be named)
 #       - G_theta: the genetic variance-covariance matrix estimated by the model
+#       - env: the environmental values over which the model has been estimated
+#       - shape: the shape of the reaction norm fitted by the model
 #       - fixed: which part of the parameters are fixed (no genetic variation)
 #       - width: the width over which the integral must be computed
 #                (10 is a generally a good value)
 # Value: The value for V_A and Gamma-decomposition as a data.frame for each environment
-rn_gamma_env <- function(env,
-                         shape,
-                         theta,
+rn_gamma_env <- function(theta,
                          G_theta,
+                         env,
+                         shape,
                          fixed = NULL,
                          width = 10) {
     # The parameter theta must be named
