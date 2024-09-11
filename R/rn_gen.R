@@ -136,9 +136,10 @@ rn_psi_e <- function(e, d_func, theta, G_theta, fixed = NULL, width = 10) {
 #       - G_theta: the genetic variance-covariance matrix estimated by the model
 #       - env: the environmental values over which the model has been estimated
 #       - shape: the function of the reaction norm fitted by the model
+#       - X: the design matrix if the model used was linear (incompatible with "shape")
 #       - fixed: which part of the parameters are fixed (no genetic variation)
 #       - wt_env: weights to use for computing the average over env
-#                 (must be the same length as env)
+#                 (must be the same length as env or rows of X)
 #       - average: should the average of variances be returned?
 #                  If FALSE, return the variance for each environmental value
 #       - width: the width over which the integral must be computed
@@ -146,8 +147,9 @@ rn_psi_e <- function(e, d_func, theta, G_theta, fixed = NULL, width = 10) {
 # Value: The value for V_gen (numeric)
 rn_vgen <- function(theta,
                     G_theta,
-                    env,
-                    shape,
+                    env = NULL,
+                    shape = NULL,
+                    X = NULL,
                     fixed = NULL,
                     wt_env = NULL,
                     average = TRUE,
@@ -157,6 +159,20 @@ rn_vgen <- function(theta,
         stop("The vector theta must be named with the corresponding parameter names")
     }
 
+    # X is incompatible with shape
+    if (is.null(X) & (is.null(shape) & is.null(env))) {
+        stop("Either the shape and environment or the design matrix X of a reaction norm should be provided")
+    } else if (!is.null(X) & !(is.null(shape) & is.null(env))) {
+        stop("The arguments X and shape cannot be used together.\n If the design matrix is available, it is usually better to use the argument X.")
+    }
+
+    if (!is.null(X)) {
+        # Check X and theta compatibility
+        if (ncol(X) != length(theta)) {
+            stop("The number of columns in X should be equal to the length of theta.")
+        }
+    }
+
     # Use weighted mean if wt_env is not NULL
     if (is.null(wt_env)) {
         func_mean <- mean
@@ -164,18 +180,23 @@ rn_vgen <- function(theta,
         func_mean <- function(x) { weighted.mean(x, w = wt_env) }
     }
 
-    # Formatting the shape for the computation of the integral
-    func <- rn_generate_shape(shape, names(theta))
+    if (!is.null(X)) {
+        # Computing the row-by-row genetic variance
+        out <- apply(X, 1, \(row_) { t(row_) %*% G_theta %*% row_ })
+    } else {
+        # Formatting the shape for the computation of the integral
+        func <- rn_generate_shape(shape, names(theta))
 
-    # Computing V_gen for each environment
-    out <-
-        sapply(env,
-               \(e) rn_vg_e(e       = e,
-                            func    = func,
-                            theta   = theta,
-                            G_theta = G_theta,
-                            fixed   = fixed,
-                            width   = width))
+        # Computing V_gen for each environment
+        out <-
+            sapply(env,
+                   \(e) rn_vg_e(e       = e,
+                                func    = func,
+                                theta   = theta,
+                                G_theta = G_theta,
+                                fixed   = fixed,
+                                width   = width))
+    }
 
     # Averaging if requested (default)
     if (average) { out <- func_mean(out) }
@@ -188,9 +209,10 @@ rn_vgen <- function(theta,
 #       - G_theta: the genetic variance-covariance matrix estimated by the model
 #       - env: the environmental values over which the model has been estimated
 #       - shape: the function of the reaction norm fitted by the model
+#       - X: the design matrix if the model used was linear (incompatible with "shape")
 #       - fixed: which part of the parameters are fixed (no genetic variation)
 #       - wt_env: weights to use for computing the average over env
-#                 (must be the same length as env)
+#                 (must be the same length as env or rows of X)
 #       - compute_gamma: should the γ-decomposition of V_add be returned?
 #       - compute_iota: should the ι-decomposition of V_AxE be returned?
 #       - width: the width over which the integral must be computed
@@ -198,8 +220,9 @@ rn_vgen <- function(theta,
 # Value: The value for V_gen (numeric)
 rn_gen_decomp <- function(theta,
                           G_theta,
-                          env,
-                          shape,
+                          env = NULL,
+                          shape = NULL,
+                          X = NULL,
                           fixed = NULL,
                           wt_env = NULL,
                           compute_gamma = TRUE,
@@ -219,6 +242,20 @@ rn_gen_decomp <- function(theta,
         var_names <- names(theta)[-fixed]
     }
 
+    # X is incompatible with shape
+    if (is.null(X) & (is.null(shape) & is.null(env))) {
+        stop("Either the shape and environment or the design matrix X of a reaction norm should be provided")
+    } else if (!is.null(X) & !(is.null(shape) & is.null(env))) {
+        stop("The arguments X and shape cannot be used together.\n If the design matrix is available, it is usually better to use the argument X.")
+    }
+
+    if (!is.null(X)) {
+        # Check X and theta compatibility
+        if (ncol(X) != length(theta)) {
+            stop("The number of columns in X should be equal to the length of theta.")
+        }
+    }
+
     # Use weighted mean if wt_env is not NULL
     if (is.null(wt_env)) {
         func_mean    <- mean
@@ -230,21 +267,31 @@ rn_gen_decomp <- function(theta,
         func_cov     <- function(x) { cov.wt(x, wt = wt_env, method = "ML")[["cov"]] }
     }
 
-    # Formatting the shape for the computation of the integral
-    func    <- rn_generate_shape(shape, all_names)
-    d_func  <- rn_generate_gradient(shape, var_names, all_names)
+    # Compute psi if X was not provided
+    if (is.null(X)) {
 
-    # Computing psi for each environment
-    psi <-
-        lapply(env,
-               \(e) {rn_psi_e(e       = e,
-                              d_func  = d_func,
-                              theta   = theta,
-                              G_theta = G_theta,
-                              fixed   = fixed,
-                              width   = width)})
-    psi <- do.call("rbind", psi)
-    colnames(psi) <- var_names
+        # Formatting the shape for the computation of the integral
+        d_func  <- rn_generate_gradient(shape, var_names, all_names)
+
+        # Computing psi for each environment
+        psi <-
+            lapply(env,
+                   \(e) {rn_psi_e(e       = e,
+                                  d_func  = d_func,
+                                  theta   = theta,
+                                  G_theta = G_theta,
+                                  fixed   = fixed,
+                                  width   = width)})
+        psi <- do.call("rbind", psi)
+        colnames(psi) <- var_names
+
+    } else {
+
+        # If X is provided, then psi is directly X
+        psi <- X
+        colnames(psi) <- var_names
+
+    }
 
     # Computing the total additive genetic variance V_add
     v_add <-
@@ -349,14 +396,16 @@ rn_gen_decomp <- function(theta,
 #       - G_theta: the genetic variance-covariance matrix estimated by the model
 #       - env: the environmental values over which the model has been estimated
 #       - shape: the shape of the reaction norm fitted by the model
+#       - X: the design matrix if the model used was linear (incompatible with "shape")
 #       - fixed: which part of the parameters are fixed (no genetic variation)
 #       - width: the width over which the integral must be computed
 #                (10 is a generally a good value)
 # Value: The value for V_A and Gamma-decomposition as a data.frame for each environment
 rn_gamma_env <- function(theta,
                          G_theta,
-                         env,
-                         shape,
+                         env = NULL,
+                         shape = NULL,
+                         X = NULL,
                          fixed = NULL,
                          width = 10) {
     # The parameter theta must be named
@@ -373,21 +422,45 @@ rn_gamma_env <- function(theta,
         var_names <- names(theta)[-fixed]
     }
 
-    # Formatting the shape for the computation of the integral
-    func    <- rn_generate_shape(shape, all_names)
-    d_func  <- rn_generate_gradient(shape, var_names, all_names)
+    # X is incompatible with shape
+    if (is.null(X) & (is.null(shape) & is.null(env))) {
+        stop("Either the shape and environment or the design matrix X of a reaction norm should be provided")
+    } else if (!is.null(X) & !(is.null(shape) & is.null(env))) {
+        stop("The arguments X and shape cannot be used together.\n If the design matrix is available, it is usually better to use the argument X.")
+    }
 
-    # Computing psi for each environment
-    psi <-
-        lapply(env,
-               \(e) {rn_psi_e(e       = e,
-                              d_func  = d_func,
-                              theta   = theta,
-                              G_theta = G_theta,
-                              fixed   = fixed,
-                              width   = width)})
-    psi <- do.call("rbind", psi)
-    colnames(psi) <- var_names
+    if (!is.null(X)) {
+        # Check X and theta compatibility
+        if (ncol(X) != length(theta)) {
+            stop("The number of columns in X should be equal to the length of theta.")
+        }
+    }
+
+    # Compute psi if X was not provided
+    if (is.null(X)) {
+
+        # Formatting the shape for the computation of the integral
+        d_func  <- rn_generate_gradient(shape, var_names, all_names)
+
+        # Computing psi for each environment
+        psi <-
+            lapply(env,
+                   \(e) {rn_psi_e(e       = e,
+                                  d_func  = d_func,
+                                  theta   = theta,
+                                  G_theta = G_theta,
+                                  fixed   = fixed,
+                                  width   = width)})
+        psi <- do.call("rbind", psi)
+        colnames(psi) <- var_names
+
+    } else {
+
+        # If X is provided, then psi is directly X
+        psi <- X
+        colnames(psi) <- var_names
+
+    }
 
     # Computing V_A_e for each environment
     v_a_e <- apply(psi, 1, \(psi_) t(psi_) %*% G_theta %*% psi_)
@@ -412,6 +485,11 @@ rn_gamma_env <- function(theta,
     })
     gamma_ij <- do.call("rbind", gamma_ij)
     colnames(gamma_ij) <- paste0("Gamma_",colnames(gamma_ij))
+
+    # If X was used and not env, use the second column of X as env
+    if (!is.null(X)) {
+        env <- X[ , 2]
+    }
 
     # Formatting the output
     out <-

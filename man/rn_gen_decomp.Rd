@@ -6,14 +6,15 @@
 This function calculates the total additive genetic variance of the reaction norm (\eqn{V_{\text{Add}}}, and its \eqn{\gamma}-decomposition), the marginal additive genetic variance of the trait (\eqn{V_{\text{A}}}) and the additive genetic variance of plasticity (\eqn{V_{\text{A}\times\text{E}}}, and its \eqn{\iota}-decomposition).
 }
 \usage{
-rn_gen_decomp(theta, G_theta, env, shape, fixed = NULL, wt_env = NULL,
-              compute_gamma = TRUE, compute_iota  = TRUE, width = 10)
+rn_gen_decomp(theta, G_theta, env = NULL, shape = NULL, X = NULL, fixed = NULL,
+              wt_env = NULL, compute_gamma = TRUE, compute_iota  = TRUE, width = 10)
 }
 \arguments{
   \item{theta}{Average parameters of the shape function. It must be a named vector, with the names corresponding to the parameters in the \code{shape} expression. (numeric)}
   \item{G_theta}{Genetic variance-covariance matrix of the parameters. It can be of lesser dimensions than \code{theta}, see \code{fixed} parameter. (numerical matrix)}
   \item{env}{Vector of environmental values (numeric).}
   \item{shape}{Expression providing the shape of the reaction where \code{x} is the environment. For example: \code{expression(a + b * x + c * x^2)}.}
+  \item{X}{If the model used was linear in the parameters, the design matrix X of the model (numeric, incompatible with the arguments \code{env} and \code{shape}).}
   \item{fixed}{If some parameters of \code{shape}, included in \code{theta} are not included in the \code{G_theta} matrix, then those dimensions are considered as genetically "fixed". Hence, \code{fixed} should contain a vector of the \bold{index} of those parameters. Otherwise (if all parameters vary genetically), and by default, fixed should be set as NA. (integer)}
   \item{wt_env}{Weights to apply to the \code{env} vector values, providing an information regarding their relative probability in the biological context. The weights must non-negative, and at least one must non-zero. The vector \code{wt_env} must be the same length as \code{env}. By default, no weighting is applied. (numeric)}
   \item{compute_gamma}{Should the \eqn{\gamma}-decomposition be performed? Default is TRUE. (boolean)}
@@ -54,10 +55,10 @@ G     <- matrix(c(0.1,      0.01,
 
 # Computing V_gen
 out <- 
-  rn_gen_decomp(env     = vec_env,
-                shape   = expr,
-                theta   = theta,
+  rn_gen_decomp(theta   = theta,
                 G_theta = G,
+                env     = vec_env,
+                shape   = expr,
                 fixed   = c(3, 4))
 # Note that fixed is set for the third and forth parameters than are not in G
 
@@ -69,11 +70,19 @@ out$Gamma_cmax + out$Gamma_xopt + out$Gamma_cmax_xopt
 out$Iota_cmax + out$Iota_xopt + out$Iota_cmax_xopt
 
 # Applying some weighting to the environmental values according to a normal distribution
-rn_gen_decomp(env     = vec_env,
-              shape   = expr,
-              theta   = theta,
+rn_gen_decomp(theta   = theta,
               G_theta = G,
+              env     = vec_env,
+              shape   = expr,
               fixed   = c(3, 4),
               wt_env  = dnorm(vec_env))
-
+              
+# If a polynomial was used, it is possible to use the linear modeling rather having
+# to compute integrals
+theta <- c(a = 1.5, b = 0.5, c = -0.5)
+X     <- cbind(1, vec_env, (vec_env - mean(vec_env))^2)
+G     <- 0.1 * diag(3)
+rn_gen_decomp(theta   = theta,
+              G_theta = G,
+              X        = X)
 }
