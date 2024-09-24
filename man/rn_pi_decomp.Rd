@@ -59,4 +59,14 @@ rn_pi_decomp(theta   = theta,
              shape   = expr,
              fixed   = c(3, 4))
 # Note that fixed is set for the third and forth parameters than are not in G
+
+# Applying some weighting to the environmental values according to a normal distribution
+# if the env variable is actually fixed
+vec_env2 <- seq(-2, 2, length.out = 20)
+rn_pi_decomp(theta   = theta,
+              G_theta = G,
+              env     = vec_env2,
+              shape   = expr,
+              fixed   = c(3, 4),
+              wt_env  = dnorm(vec_env2))
 }
