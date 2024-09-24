@@ -2,7 +2,7 @@
 \name{dragon_discrete}
 \alias{dragon_discrete}
 
-\title{A simulated dataset on the reaction norm of aggressiveness and thermal performance of dragons according to a series of experimental measures at a discretised gradient of temperature}
+\title{A simulated dataset on the reaction norms of dragons at a discretised environmental gradient}
 \format{
 A data frame with 1000 rows and 5 variables:
 \describe{
