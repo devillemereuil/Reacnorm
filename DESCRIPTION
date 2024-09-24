@@ -9,4 +9,5 @@ BugReports: https://github.com/devillemereuil/reacnorm/issues
 Description: Compute various quantitative genetics parameters from a statistical models used to study reaction norms.
 Encoding: UTF-8
 Imports: cubature (>= 1.4), stringi, matrixStats
+LazyData: true
 License: GPL-3
