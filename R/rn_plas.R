@@ -214,7 +214,6 @@ rn_vplas <- function(theta,
 #       - wt_env: weights to use for computing the average over env
 #                 (must be the same length as env)
 #       - correction: should the Bessel correction be used or not?
-#       - v_plas: optionnaly, provide the value for v_plas if already computed
 #       - width: the width over which the integral must be computed
 #                (10 is a generally a good value)
 # Value: A data.frame containing V_Plas and the pi-decomposition
@@ -225,7 +224,6 @@ rn_pi_decomp <- function(theta,
                          fixed = NULL,
                          wt_env = NULL,
                          correction = FALSE,
-                         v_plas = NA,
                          width = 10) {
     # theta must be named to know the names of parameters to format the "shape"
     if (is.null(names(theta))) {
@@ -248,17 +246,15 @@ rn_pi_decomp <- function(theta,
     }
 
     # Compute V_plas
-    if (is.na(v_plas)) {
-        v_plas <-
-            rn_vplas(theta      = theta,
-                     G_theta    = G_theta,
-                     env        = env,
-                     shape      = shape,
-                     fixed      = fixed,
-                     wt_env     = wt_env,
-                     correction = correction,
-                     width      = width)
-    }
+    v_plas <-
+        rn_vplas(theta      = theta,
+                 G_theta    = G_theta,
+                 env        = env,
+                 shape      = shape,
+                 fixed      = fixed,
+                 wt_env     = wt_env,
+                 correction = correction,
+                 width      = width)
 
     # Compute the average slope
     d_func <- rn_generate_gradient(shape, "x", names(theta))
@@ -336,12 +332,14 @@ rn_phi_decomp <- function(theta,
     # Compute the variance-covariance matrix of X
     cov_X <- func_var(X)
 
-    if (is.na(v_plas)) {
-        # Compute the correcting factor due to the uncertainty
-        var_uncert <- sum(cov_X * S)
-
-        # Compute V_Plas
+    provided_v_plas <- ifelse(is.na(v_plas), FALSE, TRUE)
+    # Compute the correcting factor due to the uncertainty
+    var_uncert <- sum(cov_X * S)
+    # Compute V_Plas from the linear model
+    if (!provided_v_plas) {
         v_plas <- as.vector(t(theta) %*% cov_X %*% theta - var_uncert)
+    } else {
+        poly_v_plas <- as.vector(t(theta) %*% cov_X %*% theta - var_uncert)
     }
     names(v_plas) <- "V_Plas"
 
@@ -397,6 +395,11 @@ rn_phi_decomp <- function(theta,
         c(v_plas, phi_i / v_plas, phi_ij / v_plas) |>
         as.list() |>
         as.data.frame()
+    
+    # If V_Plas was provided, compute M²
+    if (provided_v_plas) {
+        out[["M2"]] <- poly_v_plas / v_plas
+    }
 
     return(out)
 }
