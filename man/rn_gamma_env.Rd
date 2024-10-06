@@ -26,7 +26,7 @@ It is very important that the parameters are in the same order in the argument o
 
 If \code{X} is provided the second column is returned as the value for the "environment" (based on the assumption that a polynomial function was used).
 }
-\value{This function yields a data.frame containing the input values for the environment, the additive genetic variance in each of them, with its corresponding \eqn{\gamma}-decomposition.}
+\value{This function yields a data.frame containing the input values for the environment, the additive genetic variance in each of them, with its corresponding \eqn{\gamma}-decomposition (data.frame, all numeric).}
 
 \author{
 Pierre de Villemereuil

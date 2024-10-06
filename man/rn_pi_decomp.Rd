@@ -25,7 +25,7 @@ The variance \eqn{V_{\text{Plas}}} is the variance arising from the shape of the
 
 It is very important that the parameters are in the same order in \code{theta} (which, again, must be named) and in \code{G_theta}.
 }
-\value{This function yields the \eqn{\pi}-decomposition of \eqn{V_{\text{Plas}}} as a one-row data.frame (numeric).}
+\value{This function yields the \eqn{\pi}-decomposition of \eqn{V_{\text{Plas}}} as a one-row data.frame (data.frame, all numeric).}
 
 \author{
 Pierre de Villemereuil

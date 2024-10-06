@@ -27,7 +27,7 @@ The variance \eqn{V_{\text{Add}}} is the total additive genetic variance in the 
 
 It is very important that the parameters are in the same order in the argument of the \code{shape} function, in \code{theta} and in \code{G_theta}.
 }
-\value{This function yields the values for \eqn{V_{\text{Add}}}, \eqn{V_{\text{A}}} and \eqn{V_{\text{A}\times\text{E}}}, as well as the \eqn{\gamma}- and \eqn{\iota}-decomposition if requested, formatted as a 1-row data.frame.}
+\value{This function yields the values for \eqn{V_{\text{Add}}}, \eqn{V_{\text{A}}} and \eqn{V_{\text{A}\times\text{E}}}, as well as the \eqn{\gamma}- and \eqn{\iota}-decomposition if requested, formatted as a 1-row data.frame (data.frame, all numeric).}
 
 \author{
 Pierre de Villemereuil

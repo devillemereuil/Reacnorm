@@ -22,7 +22,7 @@ The variance \eqn{V_{\text{Plas}}} is the variance arising from the shape of the
 
 It is very important that the parameters are in the same order in \code{theta} (which, again, must be named) and in \code{G_theta}.
 }
-\value{This function yields the \eqn{\pi}-decomposition of \eqn{V_{\text{Plas}}} as a one-row data.frame. If \eqn{V_{\text{Plas}}} was provided as an argument (e.g. as computed from a separate character-state model), it also outputs \eqn{M^2}, the ratio between \eqn{V_{\text{Plas}}} as computed from the linear model parameters and the provided value for \eqn{V_{\text{Plas}}} (numeric).}
+\value{This function yields the \eqn{\pi}-decomposition of \eqn{V_{\text{Plas}}} as a one-row data.frame. If \eqn{V_{\text{Plas}}} was provided as an argument (e.g. as computed from a separate character-state model), it also outputs \eqn{M^2}, the ratio between \eqn{V_{\text{Plas}}} as computed from the linear model parameters and the provided value for \eqn{V_{\text{Plas}}} (data.frame, all numeric).}
 
 \author{
 Pierre de Villemereuil
