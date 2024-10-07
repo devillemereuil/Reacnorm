@@ -502,3 +502,37 @@ rn_gamma_env <- function(theta,
 
     return(out)
 }
+
+## Variance decomposition based on the character-state's G matrix
+# Args: - G_cs: The G-matrix inferred from a character-state model
+#       - wt: optionally, the weights for each environment to average over
+# Value: The value for V_Add, V_A, V_AxE and n_eff computed from the character-state's G-matrix
+rn_cs_gen <- function(G_cs,
+                      wt = NULL) {
+    
+    # Use weighted mean if wt is not NULL
+    if (is.null(wt)) {
+        func_mean    <- mean
+        func_mean2   <- mean
+    } else {
+        func_mean    <- function(x) { weighted.mean(x, w = wt) }
+        wt2          <- as.vector(wt %*% t(wt))
+        func_mean2   <- function(x) { weighted.mean(x, w = wt2) }
+    }
+    
+    # Computing V_Add
+    v_add <- func_mean(diag(G_cs))
+    
+    # Computing V_A
+    v_a <- func_mean2(as.vector(G_cs))
+    
+    # Computing V_AxE
+    v_axe <- v_add - v_a
+    
+    # Compute number of efficient dimensions
+    eg <- eigen(G_cs)[["values"]]
+    n_eff <- sum(eg) / max(eg)
+    
+    # Formatting the output
+    out <- data.frame(V_Add = v_add, V_A = v_a, V_AxE = v_axe, N_eff = n_eff)
+}
