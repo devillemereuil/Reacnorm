@@ -215,6 +215,7 @@ rn_vgen <- function(theta,
 #                 (must be the same length as env or rows of X)
 #       - compute_gamma: should the γ-decomposition of V_add be returned?
 #       - compute_iota: should the ι-decomposition of V_AxE be returned?
+#       - add_vars: optional values for V_Add, V_A and V_AxE already computed
 #       - width: the width over which the integral must be computed
 #                (10 is a generally a good value)
 # Value: The value for V_gen (numeric)
@@ -227,6 +228,7 @@ rn_gen_decomp <- function(theta,
                           wt_env = NULL,
                           compute_gamma = TRUE,
                           compute_iota  = TRUE,
+                          add_vars = NULL,
                           width = 10) {
     # The parameter theta must be named
     if (is.null(names(theta))) {
@@ -294,19 +296,29 @@ rn_gen_decomp <- function(theta,
     }
 
     # Computing the total additive genetic variance V_add
-    v_add <-
-        apply(psi, 1, \(psi_) t(psi_) %*% G_theta %*% psi_) |>
-        func_mean()
-    names(v_add) <- "V_Add"
+    if (is.null(add_vars)) {
+        v_add <-
+            apply(psi, 1, \(psi_) t(psi_) %*% G_theta %*% psi_) |>
+            func_mean()
+        names(v_add) <- "V_Add"
 
-    # Computing the marginal additive genetic variance V_A
-    v_a <- (t(func_colmean(psi)) %*% G_theta %*% func_colmean(psi)) |>
-           as.vector()
-    names(v_a) <- "V_A"
+        # Computing the marginal additive genetic variance V_A
+        v_a <- (t(func_colmean(psi)) %*% G_theta %*% func_colmean(psi)) |>
+                as.vector()
+        names(v_a) <- "V_A"
 
-    # Computing the interaction variance
-    v_axe <- v_add - v_a
-    names(v_axe) <- "V_AxE"
+        # Computing the interaction variance
+        v_axe <- v_add - v_a
+        names(v_axe) <- "V_AxE"
+    } else {
+        # Get values for V_Add, V_A and V_AxE from add_vars
+        v_add <- add_vars[1]
+        v_a   <- add_vars[2]
+        v_axe <- add_vars[3]
+        names(v_add) <- "V_Add"
+        names(v_a)   <- "V_A"
+        names(v_add) <- "V_AxE"
+    }
 
     # Computing the γ-decomposition if required (default)
     if (compute_gamma) {

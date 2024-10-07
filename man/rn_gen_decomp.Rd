@@ -6,8 +6,8 @@
 This function calculates the total additive genetic variance of the reaction norm (\eqn{V_{\text{Add}}}, and its \eqn{\gamma}-decomposition), the marginal additive genetic variance of the trait (\eqn{V_{\text{A}}}) and the additive genetic variance of plasticity (\eqn{V_{\text{A}\times\text{E}}}, and its \eqn{\iota}-decomposition).
 }
 \usage{
-rn_gen_decomp(theta, G_theta, env = NULL, shape = NULL, X = NULL, fixed = NULL,
-              wt_env = NULL, compute_gamma = TRUE, compute_iota  = TRUE, width = 10)
+rn_gen_decomp(theta, G_theta, env = NULL, shape = NULL, X = NULL, fixed = NULL, wt_env = NULL,
+              compute_gamma = TRUE, compute_iota  = TRUE, add_vars = NULL, width = 10)
 }
 \arguments{
   \item{theta}{Average parameters of the shape function. It must be a named vector, with the names corresponding to the parameters in the \code{shape} expression. (numeric)}
@@ -19,6 +19,7 @@ rn_gen_decomp(theta, G_theta, env = NULL, shape = NULL, X = NULL, fixed = NULL,
   \item{wt_env}{Weights to apply to the \code{env} vector values, providing an information regarding their relative probability in the biological context. The weights must non-negative, and at least one must non-zero. The vector \code{wt_env} must be the same length as \code{env}. By default, no weighting is applied. (numeric)}
   \item{compute_gamma}{Should the \eqn{\gamma}-decomposition be performed? Default is TRUE. (boolean)}
   \item{compute_iota}{Should the \eqn{\iota}-decomposition be performed? Default is TRUE. (boolean)}
+  \item{add_vars}{Optional, provide additive genetic variances \eqn{V_{\text{Add}}},  \eqn{V_{\text{A}}} and \eqn{V_{\text{A}\times\text{E}}} (in that exact order!) computed from another model, e.g. a character-state model. These values will be used to scale the \eqn{\gamma}'s and \eqn{\iota}'s and be returned by the function for the respective additive genetic variances. (numeric vector of length 3)}
   \item{width}{Parameter for the integral computation. The integral is evaluated from \code{mu} - \code{width * sqrt(var)} to \code{mu} + \code{width * sqrt(var)}. The default value is 10, which should be sensible for most models. (numeric)}
 } 
 

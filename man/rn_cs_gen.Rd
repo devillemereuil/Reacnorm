@@ -3,7 +3,7 @@
 
 \title{Decompose the \eqn{\mathbf{G}}-matrix from a character-state model}
 \description{
-This function takes the \eqn{\mathbf{G}}-matrix estimated from a character-state model and returns the values for \eqn{V_{\text{Add}}},  \eqn{V_{\text{A}}},  \eqn{V_{\text{A}\times\text{E}}} and \eqn{n_{\text{eff}}}
+This function takes the \eqn{\mathbf{G}}-matrix estimated from a character-state model and returns the values for \eqn{V_{\text{Add}}},  \eqn{V_{\text{A}}}, \eqn{V_{\text{A}\times\text{E}}} and \eqn{n_{\text{eff}}}
 }
 \usage{
 rn_cs_gen(G_cs, wt = NULL)
