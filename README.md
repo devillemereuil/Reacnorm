@@ -22,6 +22,10 @@ This package is still in development and the article related to it is still in p
 * Using the `remotes` package, install Reacnorm directly from this Github:
     `remotes::install_github("devillemereuil/Reacnorm", build_vignette = TRUE)`
 
+## Tutorial
+
+You can access the tutorial of the package [here](https://github.com/devillemereuil/Reacnorm/blob/main/vignettes/TutoReacnorm.pdf), or by using `vignette("TutoReacnorm")` once the package is installed.
+
 ## Submit feedback
 
 If you encounter any bug or usability issue, or if you have some suggestions or feature request, please use the [issue tracker](https://github.com/devillemereuil/Reacnorm/issues). Thank you!
