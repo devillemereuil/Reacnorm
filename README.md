@@ -11,16 +11,16 @@ This package is still in development and the article related to it is still in p
 ## How to install this package
 
 ### Using CRAN (not for now, coming soon)
-* ~~Simply use `install.packages("QGglmm")` as for any package.~~
+* ~~Simply use `install.packages("Reacnorm")` as for any package.~~
 
 ### From this GitHub
 
 * Install the `remotes` package:
      `install.packages("remotes")`
 * Install the packages on which Reacnorm depends: cubature, stringi and matrixStats.
-    `install.packages(c("cubature","stringi", "matrixStats"))`
+    `install.packages(c("cubature","stringi", "matrixStats", "R.rsp"))`
 * Using the `remotes` package, install Reacnorm directly from this Github:
-    `remotes::install_github("devillemereuil/Reacnorm")`
+    `remotes::install_github("devillemereuil/Reacnorm", build_vignette = TRUE)`
 
 ## Submit feedback
 
