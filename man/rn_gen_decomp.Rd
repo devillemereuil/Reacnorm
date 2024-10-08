@@ -6,8 +6,9 @@
 This function calculates the total additive genetic variance of the reaction norm (\eqn{V_{\text{Add}}}, and its \eqn{\gamma}-decomposition), the marginal additive genetic variance of the trait (\eqn{V_{\text{A}}}) and the additive genetic variance of plasticity (\eqn{V_{\text{A}\times\text{E}}}, and its \eqn{\iota}-decomposition).
 }
 \usage{
-rn_gen_decomp(theta, G_theta, env = NULL, shape = NULL, X = NULL, fixed = NULL, wt_env = NULL,
-              compute_gamma = TRUE, compute_iota  = TRUE, add_vars = NULL, width = 10)
+rn_gen_decomp(theta, G_theta, env = NULL, shape = NULL, X = NULL, fixed = NULL,
+              wt_env = NULL, compute_gamma = TRUE, compute_iota  = TRUE,
+              add_vars = NULL, width = 10)
 }
 \arguments{
   \item{theta}{Average parameters of the shape function. It must be a named vector, with the names corresponding to the parameters in the \code{shape} expression. (numeric)}
