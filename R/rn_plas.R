@@ -345,7 +345,7 @@ rn_phi_decomp <- function(theta,
 
     # Computing the variance-linked components of the phi-decomposition
     phi_i <- diag(cov_X) * theta^2 - diag(cov_X * S)
-    if (phi_i[1] != 0) {
+    if (round(phi_i[1], digits = 10) != 0) {
         warning("The intercept-level phi_0 was not 0, did you include the intercept in the design matrix X?")
         intercept <- FALSE
     } else {
