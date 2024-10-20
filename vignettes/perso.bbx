@@ -1,0 +1,66 @@
+\ProvidesFile{perso.bbx}
+[\abx@bbxid]
+
+\RequireBibliographyStyle{authoryear}
+
+\renewbibmacro{in:}{}
+\renewcommand*{\finalnamedelim}{%
+  \ifnumgreater{\value{liststop}}{2}{\finalandcomma}{}%
+  \addspace\&\space}
+\DeclareFieldFormat{titlecase}{\MakeSentenceCase{#1}}
+\DeclareFieldFormat{subtitlecase}{\MakeSentenceCase{#1}}
+\DeclareFieldFormat[article]{journaltitle}{\textit{#1}}
+\DeclareFieldFormat[article]{volume}{#1}
+\DeclareFieldFormat[article]{pages}{#1}
+\DeclareNameAlias{sortname}{last-first}
+\AtEveryBibitem{\clearfield{eprint}}
+\AtEveryBibitem{\clearfield{eprinttype}}
+\renewcommand{\labelnamepunct}{\addspace}
+% \renewcommand{\finalnamedelim}{\addcomma\space}
+\renewbibmacro*{title}{%
+  \newunitpunct
+  \ifboolexpr{
+    test {\iffieldundef{title}}
+    and
+    test {\iffieldundef{subtitle}}
+  }
+  {}
+  {%\printtext[title]{%
+    \printfield[titlecase]{title}%
+    \setunit{\subtitlepunct}%
+    \printfield[subtitlecase]{subtitle}%}%
+    \newunit}%
+  \printfield{titleaddon}}
+\renewbibmacro*{journal}{%
+  \iffieldundef{journaltitle}
+  {}
+  {\printtext[journaltitle]{%
+      \printfield[journaltitle]{journaltitle}%
+      \setunit{\subtitlepunct}%
+      \printfield[journaltitle]{journalsubtitle}}}}
+
+\renewbibmacro*{journal+issuetitle}{%
+  \usebibmacro{journal}%
+  \setunit*{\addcomma\addspace}%
+  \iffieldundef{series}
+  {}
+  {\newunit
+    \printfield{series}%
+    \setunit{\addspace}}%
+  \usebibmacro{volume+number+eid}%
+  \setunit{\addspace}%
+  %   \usebibmacro{issue+date}%
+  \setunit{\addcolon\space}%
+  \usebibmacro{issue}%
+  \newunit}
+\renewbibmacro*{volume+number+eid}{
+  \printfield{volume}
+  \printunit{\addcomma\space}
+}
+\renewbibmacro*{begentry}{\midsentence}
+
+\AtEveryBibitem{\clearfield{note}}
+\AtEveryBibitem{\clearfield{month}}
+\AtEveryBibitem{\clearfield{day}}
+
+\endinput
