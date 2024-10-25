@@ -33,7 +33,7 @@ It is very important that the parameters are in the same order in the argument o
 Pierre de Villemereuil
 }
 \seealso{
-\code{\link{rn_vplas}}, \code{\link{rn_gen_decomp}}
+\code{\link{rn_gen_decomp}}, \code{\link{rn_vplas}}, \code{\link{rn_vtot}}
 }
 \examples{
 # Some environment vector

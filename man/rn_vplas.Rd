@@ -33,7 +33,7 @@ It is very important that the parameters are in the same order in \code{theta} (
 Pierre de Villemereuil
 }
 \seealso{
-\code{\link{rn_mean_by_env}}, \code{\link{rn_pi_decomp}}
+\code{\link{rn_mean_by_env}}, \code{\link{rn_pi_decomp}}, \code{\link{rn_vgen}}, \code{\link{rn_vtot}}
 }
 \examples{
 # Some environment vector
