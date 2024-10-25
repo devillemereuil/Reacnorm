@@ -82,7 +82,7 @@ rn_vt_e <- function(e, func, theta, P_theta, fixed = NULL, width = 10) {
 ## Compute the total phenotypic variance in the reaction norm
 # Args: - theta: the average parameters estimated by the model (must be named)
 #       - P_theta: the complete variance-covariance matrix of the parameters theta
-#       - V_res: residual variance or vector of residuals variances
+#       - var_res: residual variance or vector of residuals variances
 #       - env: the environmental values over which the model has been estimated
 #       - shape: the function of the reaction norm fitted by the model
 #       - X: the design matrix if the model used was linear (incompatible with "shape")
@@ -96,7 +96,7 @@ rn_vt_e <- function(e, func, theta, P_theta, fixed = NULL, width = 10) {
 # Value: The value for V_gen (numeric)
 rn_vtot <- function(theta,
                     P_theta,
-                    V_res,
+                    var_res,
                     env = NULL,
                     shape = NULL,
                     X = NULL,
@@ -109,9 +109,9 @@ rn_vtot <- function(theta,
         stop("The vector theta must be named with the corresponding parameter names")
     }
     
-    # Checking that V_res is of length 1 or length(env)
-    if (!(length(V_res) %in% c(1, length(env), nrow(X)))) {
-        stop("V_res should be either a single value, or same number of values as the environment")
+    # Checking that var_res is of length 1 or length(env)
+    if (!(length(var_res) %in% c(1, length(env), nrow(X)))) {
+        stop("var_res should be either a single value, or same number of values as the environment")
     }
 
     # X is incompatible with shape
@@ -151,7 +151,7 @@ rn_vtot <- function(theta,
                                 P_theta = P_theta,
                                 fixed   = fixed,
                                 width   = width)) +
-            V_res
+            var_res
     }
 
     # Averaging if requested (default)
