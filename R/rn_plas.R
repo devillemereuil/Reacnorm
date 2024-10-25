@@ -28,7 +28,7 @@
 # Args: - e: the environmental value to condition to
 #       - func: the function of the reaction norm fitted by the model
 #       - theta: the average parameters estimated by the model
-#       - G_theta: the genetic variance-covariance matrix estimated by the model
+#       - V_theta: the genetic variance-covariance matrix estimated by the model
 #       - fixed: which part of the parameters are fixed (no genetic variation)
 #       - width: the width over which the integral must be computed
 #                (10 is a generally a good value)
@@ -36,7 +36,7 @@
 rn_avg_e <- function(e,
                      func,
                      theta,
-                     G_theta,
+                     V_theta,
                      fixed = NULL,
                      width = 10) {
     # Handling when some terms are fixed
@@ -44,8 +44,8 @@ rn_avg_e <- function(e,
         var       <- setdiff(1:length(theta), fixed)
         full_theta <- theta
         var_theta  <- theta[-fixed]
-        if (nrow(G_theta) == length(theta)) {
-            G_theta <- G_theta[-fixed, -fixed]
+        if (nrow(V_theta) == length(theta)) {
+            V_theta <- V_theta[-fixed, -fixed]
         }
     } else {
         full_theta <- theta
@@ -53,20 +53,20 @@ rn_avg_e <- function(e,
     }
 
     # Setting the integral width according to vcov (lower mean-w, upper mean+w)
-    w <- sqrt(diag(G_theta)) * width
+    w <- sqrt(diag(V_theta)) * width
 
     # Number of dimensions
     d <- length(w)
 
     # Computing the logdet of vcov
-    logdet <- calc_logdet(G_theta)
+    logdet <- calc_logdet(V_theta)
 
     # Average
     avg <- cubature::hcubature(
         f  = function(x) {
             full_x <- matrix(full_theta, nrow = length(full_theta), ncol = ncol(x))
             if (!is.null(fixed)) { full_x[var, ] <- x } else { full_x <- x }
-            func(e, full_x) * vec_mvnorm(x, var_theta, G_theta, logdet)
+            func(e, full_x) * vec_mvnorm(x, var_theta, V_theta, logdet)
         },
         lowerLimit      = var_theta - w,
         upperLimit      = var_theta + w,
@@ -85,13 +85,13 @@ rn_avg_e <- function(e,
 # Args: - env: the environmental values over which the model has been estimated
 #       - shape: the function of the reaction norm fitted by the model (must be named)
 #       - theta: the average parameters estimated by the model
-#       - G_theta: the genetic variance-covariance matrix estimated by the model
+#       - V_theta: the genetic variance-covariance matrix estimated by the model
 #       - fixed: which part of the parameters are fixed (no genetic variation)
 #       - width: the width over which the integral must be computed
 #                (10 is a generally a good value)
 # Value: The value for V_plas (numeric)
 rn_mean_by_env <- function(theta,
-                           G_theta,
+                           V_theta,
                            env,
                            shape,
                            fixed = NULL,
@@ -107,14 +107,14 @@ rn_mean_by_env <- function(theta,
            \(e) rn_avg_e(e       = e,
                          func    = func,
                          theta   = theta,
-                         G_theta = G_theta,
+                         V_theta = V_theta,
                          fixed   = fixed,
                          width   = width))
 }
 
 ## Compute the plastic variance (V_plas)
 # Args: - theta: the average parameters estimated by the model (must be named)
-#       - G_theta: the G matrix containing the genetic variance-covariances of
+#       - V_theta: the G matrix containing the genetic variance-covariances of
 #                  the parameters
 #       - env: the environmental values over which the model has been estimated
 #       - shape: the function of the reaction norm fitted by the model
@@ -128,7 +128,7 @@ rn_mean_by_env <- function(theta,
 #                (10 is a generally a good value)
 # Value: The value for V_plas (numeric)
 rn_vplas <- function(theta,
-                     G_theta = NULL,
+                     V_theta = NULL,
                      env = NULL,
                      shape = NULL,
                      X = NULL,
@@ -162,8 +162,8 @@ rn_vplas <- function(theta,
     }
 
     # G is needed if X is not used
-    if (is.null(G_theta) & is.null(X)) {
-        stop("G_theta is needed if the non-linear approach (using env and shape) is used")
+    if (is.null(V_theta) & is.null(X)) {
+        stop("V_theta is needed if the non-linear approach (using env and shape) is used")
     }
 
     # Configure variance function
@@ -190,7 +190,7 @@ rn_vplas <- function(theta,
         # Compute the average for each environment, then take the variance
         out <-
             rn_mean_by_env(theta    = theta,
-                           G_theta  = G_theta,
+                           V_theta  = V_theta,
                            env      = env,
                            shape    = shape,
                            fixed    = fixed,
@@ -204,7 +204,7 @@ rn_vplas <- function(theta,
 
 ## Compute the pi-decomposition of V_Plas
 # Args: - theta: the average parameters estimated by the model (must be named)
-#       - G_theta: the G matrix containing the genetic variance-covariances of
+#       - V_theta: the G matrix containing the genetic variance-covariances of
 #                  the parameters
 #       - env: the environmental values over which the model has been estimated
 #       - shape: the function of the reaction norm fitted by the model
@@ -218,7 +218,7 @@ rn_vplas <- function(theta,
 #                (10 is a generally a good value)
 # Value: A data.frame containing V_Plas and the pi-decomposition
 rn_pi_decomp <- function(theta,
-                         G_theta,
+                         V_theta,
                          env,
                          shape,
                          fixed = NULL,
@@ -248,7 +248,7 @@ rn_pi_decomp <- function(theta,
     # Compute V_plas
     v_plas <-
         rn_vplas(theta      = theta,
-                 G_theta    = G_theta,
+                 V_theta    = V_theta,
                  env        = env,
                  shape      = shape,
                  fixed      = fixed,
@@ -264,7 +264,7 @@ rn_pi_decomp <- function(theta,
                \(e) rn_avg_e(e       = e,
                              func    = d_func,
                              theta   = theta,
-                             G_theta = G_theta,
+                             V_theta = V_theta,
                              fixed   = fixed,
                              width   = width)) |>
         func_mean()
@@ -280,7 +280,7 @@ rn_pi_decomp <- function(theta,
                \(e) rn_avg_e(e       = e,
                              func    = d2_func,
                              theta   = theta,
-                             G_theta = G_theta,
+                             V_theta = V_theta,
                              fixed   = fixed,
                              width   = width)) |>
         func_mean()

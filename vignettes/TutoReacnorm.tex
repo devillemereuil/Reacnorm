@@ -302,7 +302,7 @@ pdfproducer = {pdflatex}}
 
 \subsection{The \texttt{Reacnorm} package}
 
-The aim of the \texttt{Reacnorm} is to provide tools to quantity the variation in reaction norms, when studying the phenotypic plasticity of a trait. It provides a way to perform a variance decomposition of reaction norm, distinguishing the variation due to the average shape of reaction norm on the one hand; and the genetic variation on the other hand. For more information, see \textcite{devillemereuil_general_2016}.
+The aim of the \texttt{Reacnorm} is to provide tools to quantity the variation in reaction norms, when studying the phenotypic plasticity of a trait. It provides a way to perform a variance decomposition of reaction norm, distinguishing the variation due to the average shape of reaction norm on the one hand; and the genetic variation on the other hand. For more information, see \textcite{devillemereuil_partitioning_2023}.
 
 \subsection{The dragon dataset}
 
@@ -335,7 +335,7 @@ Third, it follows a principle of ``maximal complexity'' in that sequences using 
 
 \section{Overview of the theory}
 
-Coming soon, a summary of the theoretical bases of the Reacnorm package. In the meantime, users can refer to the companion paper of the package \autocite{devillemereuil_general_2016}.
+Coming soon, a summary of the theoretical bases of the Reacnorm package. In the meantime, users can refer to the companion paper of the package \autocite{devillemereuil_partitioning_2023}.
 
 
 \section{Studying reaction norms in a discretised environment}
@@ -545,7 +545,7 @@ b -0.023922259  0.171736042  0.005871739
 c -0.002332428  0.005871739  0.031550777
 \end{Routput}
 Note that we used the \texttt{robust = TRUE} argument. This outputs the posterior median, rather than the more classical posterior mean, as a point estimate. In general, if the posterior distribution is symmetrical (see ``b'' prefixed panels in \autoref{fig_mod_agr}), both point estimates should be comparable.
-But for standard-deviations or variances of the random effects, posterior distributions tend to be strongly to slightly asymmetrical, in which case the posterior median is a better point estimate.
+But for standard-deviations or variances of the random effects, posterior distributions tend to be strongly to slightly asymmetrical, in which case the posterior median is a better point estimate \autocite{pick_describing_2023}.
 We thus use \texttt{robust = TRUE} everywhere for consistency.
 We can also extract the residual variance, that will be useful to get at the total phenotypic variance contained in the reaction norm:
 \begin{Rinput}
@@ -601,7 +601,7 @@ However, because it requires performing numerical integration, it would take lon
 \begin{Rinput}
 plas_agr_pi <-
     rn_pi_decomp(th eta   = theta_agr,
-                 G_theta = G_agr,
+                 V_theta = G_agr,
                  env     = tbl_dragon_ds[["Temp"]] |> unique(),
                  shape   = expression(a + b * x + c * x^2))
 plas_agr_pi
@@ -680,7 +680,7 @@ var_agr
 0.56310083 0.29490873 0.09010449 0.20480423 0.85800955 
 \end{Routput}
 As we mentioned above, the contribution of the variance arising from plasticity due to the average reaction norm is larger than the contribution of the total additive genetic variance (i.e.\ $P^{2}_{\text{RN}} = 0.56 > 0.29 = h^{2}_{\text{RN}}$).
-This also illustrate one of the fundamental results of the companion paper \autocite{devillemereuil_general_2016}, i.e.\ $h^{2}_{\text{RN}} = h^{2} + h^{2}_{\text{I}}$.
+This also illustrate one of the fundamental results of the companion paper \autocite{devillemereuil_partitioning_2023}, i.e.\ $h^{2}_{\text{RN}} = h^{2} + h^{2}_{\text{I}}$.
 The reaction norm explains a large part of the total phenotypic variance ($T^{2}_{\text{RN}}=0.86$).
 
 \subsubsection{Decomposing the variance using the full posterior distribution}
@@ -1358,7 +1358,7 @@ summarise_draws(post_gen_cs)
 4 N_eff    1.69   1.69   0.108   0.112   1.53   1.88    1.00    1011.     987.
 \end{Routput}
 The function also outputs $n_{\text{eff}}$, the efficient number of dimensions.
-However, please keep in mind that this value seems to suffer from underestimation, as shown in the companion paper \autocite{devillemereuil_general_2016}.
+However, please keep in mind that this value seems to suffer from underestimation, as shown in the companion paper \autocite{devillemereuil_partitioning_2023}.
 Nevertheless, the number is relatively low compared to the total number of environment (10), suggesting a rather high level of constraints in the genetic variation of the reaction norm across environments.
 This is also supported by the additive genetic variance decomposition of the reaction norm, with almost two times higher additive genetic variance in plasticity ($V_{\text{A}\times\text{E}} = 0.031$) than the marginal additive genetic variance of the trait ($V_{\text{A}} = 0.018$).
 
@@ -1752,7 +1752,7 @@ Finally, we need to state to \texttt{Reacnorm} that the third (\texttt{rho}) and
 post_v_plas_nl_tpc <-
     map2(post_nl_tpc[["Theta"]], post_nl_tpc[["G"]],
          \§§(th_, G_) { data.frame(V_Plas = rn_vplas(theta    = th_,
-                                                   G_theta  = G_,
+                                                   V_theta  = G_,
                                                    env      = vec_env,
                                                    shape    = gg_shape,
                                                    fixed    = c(3, 4))) },
@@ -1779,7 +1779,7 @@ This way, we can use the \texttt{rn\_pi\_decomp()} function of \texttt{Reacnorm}
 post_plas_nl_tpc_norm <-
     map2(post_nl_tpc[["Theta"]], post_nl_tpc[["G"]],
          \§§(th_, G_) { rn_pi_decomp(theta    = th_,
-                                   G_theta  = G_,
+                                   V_theta  = G_,
                                    env      = vec_env,
                                    shape    = gg_shape,
                                    fixed    = c(3, 4),
@@ -2176,7 +2176,7 @@ Just to be sure, we can compare with the actual $\pi$-decomposition from \texttt
 \begin{Rinput}
 plas_agr_pi <-
     rn_pi_decomp(theta   = theta_agr,
-                    G_theta = G_agr,
+                    V_theta = G_agr,
                     env     = seq_env,
                     shape   = expression(a + b * x + c * x^2),
                     wt_env  = dnorm(seq_env))
@@ -2665,7 +2665,7 @@ Now, we just need to call \texttt{future\_map2()} instead of \texttt{map2()}, an
 post_pi_nl_tpc <-
     future_map2(post_nl_tpc[["Theta"]], post_nl_tpc[["G"]],
                 \§§(th_, G_) { rn_pi_decomp(theta    = th_,
-                                          G_theta  = G_,
+                                          V_theta  = G_,
                                           env      = seq_env,
                                           shape    = gg_shape,
                                           fixed    = c(3, 4),
