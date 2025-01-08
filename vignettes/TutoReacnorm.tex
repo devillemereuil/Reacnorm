@@ -302,7 +302,7 @@ pdfproducer = {pdflatex}}
 
 \subsection{The \texttt{Reacnorm} package}
 
-The aim of the \texttt{Reacnorm} is to provide tools to quantity the variation in reaction norms, when studying the phenotypic plasticity of a trait. It provides a way to perform a variance decomposition of reaction norm, distinguishing the variation due to the average shape of reaction norm on the one hand; and the genetic variation on the other hand. For more information, see \textcite{devillemereuil_partitioning_2023}.
+The aim of the \texttt{Reacnorm} is to provide tools to quantity the variation in reaction norms, when studying the phenotypic plasticity of a trait. It provides a way to perform a variance decomposition of reaction norm, distinguishing the variation due to the average shape of reaction norm on the one hand; and the genetic variation on the other hand. For more information, see \textcite{devillemereuil_partitioning_2025}.
 
 \subsection{The dragon dataset}
 
@@ -314,11 +314,11 @@ These data were, of course, simulated for the sake of this tutorial.
 The tutorial assumes that the \textit{tidyverse} meta-package (containing e.g. \texttt{tidyr}, \texttt{dplyr}, \texttt{purrr}, \texttt{forcats} and \texttt{ggplot2}, that we'll be using) has been loaded.
 To complement \texttt{ggplot2}, and be able to compose plots, we will use the \texttt{patchwork} package. For the statistical modelling, we will use the Bayesian package \texttt{brms}. 
 There are two reasons for this choice. First, by using a Bayesian method, we can easily compute the uncertainty surrounding our \texttt{Reacnorm} estimates, by computing a value for each iteration of the MCMC chain. Second, \texttt{brms} is a very versatile, and thus we can use it to implement all of the models (including non-linear models) we will be using in this tutorial.
-Finally, to work with the MCMC output of \texttt{brms}, we will be using the packages \textit{posterior} and \texttt{bayesplot}.
+Finally, to work with the MCMC output of \texttt{brms}, we will be using the packages \texttt{posterior} and \texttt{bayesplot}.
 The tutorial assumes that all of those packages are loaded.
 
 Another thing is that we will set a ``seed'' for the whole tutorial. This seed will allow for the reproducibility of the analysis across computers.
-For this tutorial, the seed was set to 777:
+For this tutorial, the (lucky!) seed was set to 777:
 \begin{Rinput}
 seed <- 777
 set.seed(seed)
@@ -335,7 +335,7 @@ Third, it follows a principle of ``maximal complexity'' in that sequences using 
 
 \section{Overview of the theory}
 
-Coming soon, a summary of the theoretical bases of the Reacnorm package. In the meantime, users can refer to the companion paper of the package \autocite{devillemereuil_partitioning_2023}.
+Coming soon, a summary of the theoretical bases of the Reacnorm package. In the meantime, users can refer to the companion paper of the package \autocite{devillemereuil_partitioning_2025}.
 
 
 \section{Studying reaction norms in a discretised environment}
@@ -624,7 +624,7 @@ The variance $V_{\text{Plas}}$ is the variance arising from variation along the 
 Slightly more of this variance is coming from the curvature of this line ($\pi_{\text{Cv}}=0.52$) than from its average slope ($\pi_{\text{Sl}}=0.48$), although these contributions are close to equality.
 
 \paragraph{Getting the additive genetic variances and their decomposition}
-To compute the additive genetic variance of the reaction norm ($V_{\text{Add}}$) and its $\gamma$-decomposition; the marginal additive genetic variance of the trait ($V_{\text{A}}$); and the additive genetic variance of plasticity ($V_{\text{A}\times\text{E}}$) and its $\iota$-decomposition.
+To compute the additive genetic variance of the reaction norm ($V_{\text{Add}}$) and its $\gamma$-decomposition; the environment-blind additive genetic variance  ($V_{\text{A}}$); and the additive genetic variance arising from plasticity ($V_{\text{A}\times\text{E}}$) and its $\iota$-decomposition.
 \begin{Rinput}
 gen_agr <-
     rn_gen_decomp(theta = theta_agr, G_theta = G_agr, X = design_mat)
@@ -637,7 +637,7 @@ gen_agr
 1 -0.01530597      0 0.8113958 0.1886042        0        0        0
 \end{Routput}
 The additive genetic variance of the reaction is thus $V_{\text{Add}} = 0.50$), so roughly twice as low as $V_{\text{Plas}}$.
-It is composed for a third by the marginal additive genetic variance of the trait ($V_{\text{A}} = 0.15$) and for two-thirds by the additive genetic variance of plasticity ($V_{\text{A}\times\text{E}} = 0.35$).
+It is composed for a third by the environment-blind additive genetic variance ($V_{\text{A}} = 0.15$) and for two-thirds by the additive genetic variance arising from plasticity ($V_{\text{A}\times\text{E}} = 0.35$).
 This seems to suggest that there is a considerable amount of adaptive potential in the plasticity of aggressiveness.
 Most of the additive genetic variation in the reaction norm comes from variation in the slopes ($\gamma_{b}=0.56$). Regarding genetic variation in plasticity itself, it is even more the case that most of the variation (thus adaptive potential) comes from the slope ($\iota_{b}=0.81$).
 Note that, in this simple case, most of the covariance terms (e.g.\ $\gamma_{a,b}=0$ or $\iota_{b,c}=0$).
@@ -680,7 +680,7 @@ var_agr
 0.56310083 0.29490873 0.09010449 0.20480423 0.85800955 
 \end{Routput}
 As we mentioned above, the contribution of the variance arising from plasticity due to the average reaction norm is larger than the contribution of the total additive genetic variance (i.e.\ $P^{2}_{\text{RN}} = 0.56 > 0.29 = h^{2}_{\text{RN}}$).
-This also illustrate one of the fundamental results of the companion paper \autocite{devillemereuil_partitioning_2023}, i.e.\ $h^{2}_{\text{RN}} = h^{2} + h^{2}_{\text{I}}$.
+This also illustrate one of the fundamental results of the companion paper \autocite{devillemereuil_partitioning_2025}, i.e.\ $h^{2}_{\text{RN}} = h^{2} + h^{2}_{\text{I}}$.
 The reaction norm explains a large part of the total phenotypic variance ($T^{2}_{\text{RN}}=0.86$).
 
 \subsubsection{Decomposing the variance using the full posterior distribution}
@@ -1358,9 +1358,9 @@ summarise_draws(post_gen_cs)
 4 N_eff    1.69   1.69   0.108   0.112   1.53   1.88    1.00    1011.     987.
 \end{Routput}
 The function also outputs $n_{\text{eff}}$, the efficient number of dimensions.
-However, please keep in mind that this value seems to suffer from underestimation, as shown in the companion paper \autocite{devillemereuil_partitioning_2023}.
+However, please keep in mind that this value seems to suffer from underestimation, as shown in the companion paper \autocite{devillemereuil_partitioning_2025}.
 Nevertheless, the number is relatively low compared to the total number of environment (10), suggesting a rather high level of constraints in the genetic variation of the reaction norm across environments.
-This is also supported by the additive genetic variance decomposition of the reaction norm, with almost two times higher additive genetic variance in plasticity ($V_{\text{A}\times\text{E}} = 0.031$) than the marginal additive genetic variance of the trait ($V_{\text{A}} = 0.018$).
+This is also supported by the additive genetic variance decomposition of the reaction norm, with almost two times higher additive genetic variance in plasticity ($V_{\text{A}\times\text{E}} = 0.031$) than the environment-blind additive genetic variance ($V_{\text{A}} = 0.018$).
 
 \paragraph{Computing the variance-standardised parameters}
 We can compute the variance-standardised parameters from the character-state pretty much the same we did it for the aggressiveness trait (see \autoref{fig_mod_tpc_cs_ds}):
@@ -1949,7 +1949,7 @@ mcmc_areas(post_std_nl_tpc,
 6 T2          0.945  0.945 0.00490 0.00457 0.937  0.953  1.00     972.     952.
 \end{Routput}
 So, most of the total variance is coming from the average shape of the reaction norm ($P^{2}_{\text{RN}} = 0.65$), and less from the total genetic variation ($H^{2}_{\text{RN}} = 0.30$).
-Regarding, more specifically, the additive genetic variation ($h^{2}_{\text{RN}} = 0.27$), it composed of almost the same amount of marginal heritability of the trait ($h^{2}=0.12$) and heritability of plasticity ($h^{2}_{\text{I}} = 0.15$).
+Regarding, more specifically, the additive genetic variation ($h^{2}_{\text{RN}} = 0.27$), it composed of almost the same amount of environment-blind heritability ($h^{2}=0.12$) and heritability from plasticity ($h^{2}_{\text{I}} = 0.15$).
 As for the character-state, the reaction norm explains almost all of the total phenotypic variation ($T^{2}_{\text{RN}}=0.95$).
 
 
@@ -2214,8 +2214,8 @@ gen_agr
         Iota_a    Iota_b    Iota_c      Iota_a_b      Iota_a_c      Iota_b_c
 1 3.685019e-33 0.5621111 0.4378889 -5.750906e-34 -1.686659e-33 -5.458193e-19
 \end{Routput}
-Here, we show that, for aggressiveness, the additive genetic variance of plasticity represents a considerable amount of variance ($V_{\text{A}\times\text{E}}=0.28$) compared to the marginal additive genetic variance of the trait ($V_{\text{A}}=0.09$).
-The additive genetic variance of plasticity is mostly driven by variation in the slope ($\iota_{b} = 0.56$), while the total additive genetic variance in the reaction norm is mostly driven by the curvature ($\gamma_{c}=0.5$) of the quadratic curve.
+Here, we show that, for aggressiveness, the additive genetic variance arising from plasticity represents a considerable amount of variance ($V_{\text{A}\times\text{E}}=0.28$) compared to the environment-blind additive genetic variance ($V_{\text{A}}=0.09$).
+The additive genetic variance arising from plasticity is mostly driven by variation in the slope ($\iota_{b} = 0.56$), while the total additive genetic variance in the reaction norm is mostly driven by the curvature ($\gamma_{c}=0.5$) of the quadratic curve.
 
 \paragraph{Computing the variance-standardised estimates}
 As for the discrete case, we can compute the total variance and use it to compute variance-standardised estimates:
@@ -2764,7 +2764,7 @@ mcmc_areas(post_gen_nl_tpc,
  9 Iota_cmax_xopt  -0.000514 -0.000263 0.000724 0.000358 -0.00208   -2.08e-7 1.00     1042.    1036.
 10 V_Gen            0.0317    0.0305   0.00798  0.00488   0.0240     4.13e-2 1.00     1002.     941.
 \end{Routput}
-Clearly, whether we look at the contribution of the parameter $C$ to the total additive genetic variance ($\gamma_{C}=0.99$) or to the additive genetic variance of plasticity ($\iota_{C}=0.98$), its importance is extremely strong in this case.
+Clearly, whether we look at the contribution of the parameter $C$ to the total additive genetic variance ($\gamma_{C}=0.99$) or to the additive genetic variance arising from plasticity ($\iota_{C}=0.98$), its importance is extremely strong in this case.
 
 \paragraph{Computing the total variance and the variance-standardised estimates}
 We can compute the total variance and the variance-standardised estimates as in the quadratic case:
@@ -2801,7 +2801,7 @@ mcmc_areas(post_std_nl_tpc,
 5 H2_I        0.119  0.117  0.0195  0.0177  0.0919 0.152 1.00     1076.     954.
 6 T2          0.929  0.930  0.00860 0.00799 0.915  0.942 1.00      850.     806.
 \end{Routput}
-In this case, most of the variance comes from the average shape of reaction norm ($P^{2}_{\text{RN}}=0.7$), and the reaction norm explains most of the variation in the phenotypic trait ($T^{2}_{\text{RN}}=0.93$). The difference between the broad- and narrow-sense heritabilities ($H^{2}_{\text{RN}}=0.23$ v. $h^{2}_{\text{RN}}=0.22$) is not strong. The heritability in the reaction norm is roughly split into the marginal heritability of the trait ($h^{2}=0.10$) and the heritability of plasticity ($h^{2}_{\text{I}}=0.12$).
+In this case, most of the variance comes from the average shape of reaction norm ($P^{2}_{\text{RN}}=0.7$), and the reaction norm explains most of the variation in the phenotypic trait ($T^{2}_{\text{RN}}=0.93$). The difference between the broad- and narrow-sense heritabilities ($H^{2}_{\text{RN}}=0.23$ v. $h^{2}_{\text{RN}}=0.22$) is not strong. The heritability in the reaction norm is roughly split into the environment-blind heritability  ($h^{2}=0.10$) and the heritability from plasticity ($h^{2}_{\text{I}}=0.12$).
 %
 \begin{figure}[h!t!]
   \includegraphics[width = 0.49\textwidth]{TPC_varstd_ct.pdf}
