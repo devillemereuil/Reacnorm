@@ -1,6 +1,7 @@
 # Reacnorm: an R package to decompose the variance in reaction norms
 
 [![CRAN_Status_Badge](https://www.r-pkg.org/badges/version/Reacnorm)](https://cran.r-project.org/package=Reacnorm)
+[![DOI](https://zenodo.org/badge/827684926.svg)](https://doi.org/10.5281/zenodo.14674905)
 
 ## What is this package?
 
