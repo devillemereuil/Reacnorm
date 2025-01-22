@@ -319,7 +319,7 @@ rn_phi_decomp <- function(theta,
 
     #  Checking that dimensions are correct
     if (ncol (X) != nrow(S) | ncol(X) != ncol(S)) {
-        print("Incompatible dimensions between the design matrix X and the error matrix S")
+        stop("Incompatible dimensions between the design matrix X and the error matrix S")
     }
 
     # Configure variance function
@@ -360,11 +360,8 @@ rn_phi_decomp <- function(theta,
             names <- names(theta)
         }
     } else {
-        print(intercept)
         start <- ifelse(intercept, 1, 0)
-        print(start)
         end   <- ifelse(intercept, length(phi_i), length(phi_i) - 1)
-        print(end)
         names <- seq(start, end)
     }
     names(phi_i) <- paste0("Phi_", names)
