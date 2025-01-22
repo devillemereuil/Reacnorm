@@ -1,14 +1,14 @@
 Package: Reacnorm
 Type: Package
 Title: Perform a Partition of Variance of Reaction Norms
-Version: 0.2.0
+Version: 0.2.1
 Date: 2025-01-20
 Authors@R: person(given = "Pierre",
                   family = "de Villemereuil",
                   role = c("aut", "cre"),
                   email = "pierre.de-villemereuil@mnhn.fr")
 BugReports: https://github.com/devillemereuil/reacnorm/issues
-Description: This package provides various functions to partition the phenotypic variance of a plastic trait, studied through its reaction norm. The variance partition distinguishes between the variance arising from the average shape of the reaction norms (V_Plas) and the (additive) genetic variance . The latter is itself separated into an environment-blind component (V_G/V_A) and the component arising from plasticity (V_GxE/V_AxE). The package also provides a way to further partition V_Plas into aspects (slope/curvature) of the shape of the average reaction norm (π-decomposition) and partition V_Add (γ-decomposition) and V_AxE (ι-decomposition) into the impact of genetic variation in the reaction norm parameters. Reference: de Villemereuil & Chevin (2025) <doi:10.32942/X2NC8B>
+Description: This package provides various functions to partition the phenotypic variance of a plastic trait, studied through its reaction norm. The variance partition distinguishes between the variance arising from the average shape of the reaction norms (V_Plas) and the (additive) genetic variance . The latter is itself separated into an environment-blind component (V_G/V_A) and the component arising from plasticity (V_GxE/V_AxE). The package also provides a way to further partition V_Plas into aspects (slope/curvature) of the shape of the average reaction norm (pi-decomposition) and partition V_Add (gamma-decomposition) and V_AxE (iota-decomposition) into the impact of genetic variation in the reaction norm parameters. Reference: de Villemereuil & Chevin (2025) <doi:10.32942/X2NC8B>.
 Encoding: UTF-8
 Imports: cubature (>= 1.4), stringi, matrixStats
 Suggests: R.rsp
