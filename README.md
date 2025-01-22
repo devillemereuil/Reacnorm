@@ -5,9 +5,13 @@
 
 ## What is this package?
 
-Reacnorm allows for the computation of various quantitative genetics parameters from a statistical models used to study reaction norms.
+Reacnorm provides various functions to partition the phenotypic variance of a plastic trait, studied through its reaction norm. The variance partition distinguishes between the variance arising from the average shape of the reaction norms (V_Plas) and the (additive) genetic variance . The latter is itself separated into an environment-blind component (V_G/V_A) and the component arising from plasticity (V_GxE/V_AxE). The package also provides a way to further partition V_Plas into aspects (slope/curvature) of the shape of the average reaction norm (π-decomposition) and partition V_Add (γ-decomposition) and V_AxE (ι-decomposition) into the impact of genetic variation in the reaction norm parameters.
 
-This package is still in development and the article related to it is still in peer review. It has not been submitted to CRAN yet, but will be in the future.
+This package is still in development and the article related to it ~~is still in peer review~~ has been recommended by PCI EvolBiol and is on its way to Peer Community Journal! It is being submitted to CRAN.
+
+### Reference
+
+The current reference is the recommended preprint of [de Villemereuil & Chevin (2025)](https://doi.org/10.32942/X2NC8B).
 
 ## How to install this package
 
