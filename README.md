@@ -1,7 +1,9 @@
 # Reacnorm: an R package to decompose the variance in reaction norms
 
 [![CRAN_Status_Badge](https://www.r-pkg.org/badges/version/Reacnorm)](https://cran.r-project.org/package=Reacnorm)
-[![DOI](https://zenodo.org/badge/827684926.svg)](https://doi.org/10.5281/zenodo.14674905)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.14720816.svg)](https://doi.org/10.5281/zenodo.14720816)
+
+
 
 ## What is this package?
 
@@ -34,4 +36,7 @@ You can access the tutorial of the package [here](https://github.com/devillemere
 ## Submit feedback
 
 If you encounter any bug or usability issue, or if you have some suggestions or feature request, please use the [issue tracker](https://github.com/devillemereuil/Reacnorm/issues). Thank you!
+
+## Accepted version of the package
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.14674906.svg)](https://doi.org/10.5281/zenodo.14674906)
 
