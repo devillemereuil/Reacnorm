@@ -38,5 +38,6 @@ You can access the tutorial of the package [here](https://github.com/devillemere
 If you encounter any bug or usability issue, or if you have some suggestions or feature request, please use the [issue tracker](https://github.com/devillemereuil/Reacnorm/issues). Thank you!
 
 ## Accepted version of the package
+You will find the version of the package at acceptance of the corresponding article using the following DOI:
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.14674906.svg)](https://doi.org/10.5281/zenodo.14674906)
 
